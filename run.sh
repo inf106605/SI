@@ -1,5 +1,5 @@
 #!/bin/sh
 
-make && echo ; ./prog_asm.exe ; echo ; ./prog_pas.exe
+make && echo ; echo '----- ASM -----' ; ./prog_asm.exe ; echo ; echo '----- PAS -----' ; ./prog_pas.exe
 
 exit $?

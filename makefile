@@ -1,6 +1,12 @@
 .PHONY: all
 all: prog_asm.exe prog_pas.exe
 
+translator.exe: translator.pl
+	swipl --traditional -o translator.exe -c translator.pl --goal=main 2>/dev/null
+
+prog.pas: prog.asm translator.exe
+	translator.exe <prog.asm >prog.pas
+
 prog_asm.exe: prog_asm.obj printers.obj
 	gcc prog_asm.obj printers.obj -o prog_asm.exe
 
