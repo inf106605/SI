@@ -1,11 +1,21 @@
-prog.exe: prog.obj printers.obj
-	gcc prog.obj printers.obj -o prog.exe
+.PHONY: all
+all: prog_asm.exe prog_pas.exe
 
-prog.obj: prog.asm
+prog_asm.exe: prog_asm.obj printers.obj
+	gcc prog_asm.obj printers.obj -o prog_asm.exe
+
+prog_asm.obj: prog.asm
 	nasm -fwin32 prog.asm
+	mv prog.obj prog_asm.obj
 
 printers.obj: printers.c
 	gcc -c printers.c -o printers.obj
 
+prog_pas.exe: prog.pas
+	fpc prog.pas >/dev/null
+	rm -f prog.o
+	mv prog.exe prog_pas.exe
+
+.PHONY: clean
 clean:
-	rm -r -f *.obj *.exe
+	rm -f *.o *.obj *.exe

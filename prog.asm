@@ -15,8 +15,10 @@
     extern  _print_uint32
 
     section .text
+msg:
+    db  14, 'Hello, World!', 10
 _main:
-    push    message
+    push    msg
     call    _print_pascal_string
     add     esp, 4
 	push	0xFFFFFF9A
@@ -28,5 +30,3 @@ _main:
 	call	_print_uint32
 	add		esp, 4
     ret
-message:
-    db  14, 'Hello, World!', 10
