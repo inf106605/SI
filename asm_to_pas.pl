@@ -7,7 +7,12 @@ main() :-
 
 %-------------------------------------------------------------------------------
 
-program(Program) --> program_header(Header), non_significant_lines(), main_function(Main), non_significant_lines(), { append(Header, Main, Program) }.
+program(Program) -->
+	program_header(Header),
+	non_significant_lines(),
+	main_function(Main),
+	end_non_significant_lines(),
+	{ append(Header, Main, Program) }.
 
 program_header(Header) --> program_header_lines(), last_program_header_line(), { Header = "PROGRAM Prog;\n" }.
 program_header_lines() --> program_header_line(), program_header_lines().
@@ -29,8 +34,10 @@ return_instruction(Return) --> maybe_whitespaces(), "ret", non_significant_thing
 function_line(Line) --> non_significant_thing(), { Line = "" }.
 %TODO real instructions
 
+end_non_significant_lines() --> non_significant_line(), end_non_significant_lines().
+end_non_significant_lines() --> non_significant_thing().
 non_significant_lines() --> non_significant_line(), non_significant_lines().
-non_significant_lines() --> non_significant_thing().
+non_significant_lines() --> "".
 non_significant_line() --> non_significant_thing(), "\n".
 
 non_significant_thing() --> maybe_whitespaces(), maybe_comment().
