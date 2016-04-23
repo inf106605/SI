@@ -15,8 +15,8 @@
 	extern  _print_uint32
 
 	section .text
-;msg:
-;	db  14, 'Hello, World!', 10
+msg:
+	db  14, 'Hello, World!', 10
 _main:
 ;	push    msg
 ;	call    _print_pascal_string
