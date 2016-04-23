@@ -18,8 +18,8 @@ program_header(Header) --> program_header_lines(), last_program_header_line(), {
 program_header_lines() --> program_header_line(), program_header_lines().
 program_header_lines() --> "".
 program_header_line() --> non_significant_line() | program_header_global_line() | program_header_extern_line().
-program_header_global_line() --> maybe_whitespaces(), "global", whitespaces(), name(), non_significant_thing(), "\n".
-program_header_extern_line() --> maybe_whitespaces(), "extern", whitespaces(), name(), non_significant_thing(), "\n".
+program_header_global_line() --> maybe_whitespaces(), "global", whitespaces(), name(_), non_significant_thing(), "\n".
+program_header_extern_line() --> maybe_whitespaces(), "extern", whitespaces(), name(_), non_significant_thing(), "\n".
 last_program_header_line() --> maybe_whitespaces(), "section", whitespaces(),".text", non_significant_thing(), "\n".
 
 main_function(Main) --> main_function_header(), function_body(Body), { append(["\nBEGIN\n", Body, "END.\n"], Main) }.
@@ -50,16 +50,17 @@ whitespaces() --> whitespace(), whitespaces().
 whitespaces() --> whitespace().
 whitespace() --> " " | "\t".
 
-name() --> non_digit_name_character(), rest_of_name(). %not sure if it is good - check assembler documentation
-rest_of_name() --> name_character(), rest_of_name().
-rest_of_name() --> "".
+name(Name) --> non_digit_name_character(Char), rest_of_name(RestOfName), { append(Char, RestOfName, Name) }. %not sure if it is good - check assembler documentation
+rest_of_name(Name) --> name_character(Char), rest_of_name(RestOfName), { append(Char, RestOfName, Name) }.
+rest_of_name(Name) --> "", { Name = "" }.
 
-name_character() --> digit() | non_digit_name_character().
-non_digit_name_character --> letter() | "_" | ".".
+name_character(Char) --> digit(Char) | non_digit_name_character(Char).
+non_digit_name_character(Char) --> letter(Char) | other_name_character(Char).
+other_name_character(Char) --> "_", { Char = "_" }.
+other_name_character(Char) --> ".", { Char = "." }.
 
-letter() --> [Letter], { code_type(Letter, alpha) }.
-
-digit() --> "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9".
+letter(Letter) --> [LetterCode], { code_type(LetterCode, alpha), Letter = [LetterCode] }.
+digit(Digit) --> [DigitCode], { code_type(DigitCode, digit), Digit = [DigitCode] }.
 
 maybe_no_newline_characters() --> "" | no_newline_characters().
 no_newline_characters() --> no_newline_character(), no_newline_characters().
