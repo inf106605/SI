@@ -25,4 +25,4 @@ prog_pas.exe: prog.pas
 
 .PHONY: clean
 clean:
-	rm -f *.o *.obj *.exe prog.pas
+	rm -f *.o *.obj *.exe prog.pas prog_new.pas

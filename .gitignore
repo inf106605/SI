@@ -1,3 +1,4 @@
 *.obj
 *.exe
 /prog.pas
+/prog_new.pas
