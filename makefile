@@ -5,7 +5,7 @@ asm_to_pas.exe: asm_to_pas.pl
 	swipl --traditional -o asm_to_pas.exe -c asm_to_pas.pl --goal=main 2>/dev/null
 
 prog.pas: prog.asm asm_to_pas.exe
-	asm_to_pas.exe <prog.asm >prog_new.pas
+	./asm_to_pas.exe <prog.asm >prog_new.pas
 	if [ -f prog.pas ] && diff prog.pas prog_new.pas >/dev/null ; then rm -f prog_new.pas ; else mv prog_new.pas prog.pas ; fi
 
 prog_asm.exe: prog_asm.obj printers.obj
