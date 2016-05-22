@@ -9,14 +9,14 @@ prog.pas: prog.asm asm_to_pas.exe
 	if [ -f prog.pas ] && diff prog.pas prog_new.pas >/dev/null ; then rm -f prog_new.pas ; else mv prog_new.pas prog.pas ; fi
 
 prog_asm.exe: prog_asm.obj printers.obj
-	gcc -m32 prog_asm.obj printers.obj -o prog_asm.exe
+	g++ -m32 -Wall prog_asm.obj printers.obj -o prog_asm.exe
 
 prog_asm.obj: prog.asm
 	nasm -fwin32 prog.asm
 	mv prog.obj prog_asm.obj
 
 printers.obj: printers.c
-	gcc -m32 -c printers.c -o printers.obj
+	g++ -m32 -Wall -O2 -c printers.c -o printers.obj
 
 prog_pas.exe: prog.pas
 	fpc prog.pas >/dev/null
