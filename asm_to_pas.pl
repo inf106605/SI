@@ -68,16 +68,14 @@ main_function_header() --> function_header("main").
 
 %-------------------------------- function body --------------------------------
 
-function_body(Body) --> function_line(Line), function_body(BodyPart), { append(Line, BodyPart, Body) }.
+function_body(Body) --> non_significant_line(), function_body(BodyPart), { Body = "" }.
+function_body(Body) --> instruction_set("\t", Line), function_body(BodyPart), { append(Line, BodyPart, Body) }.
 function_body(Body) --> return_instruction(), { Body = "\n" }.
 
 %--------------------------------- INSTRUCTION ---------------------------------
-	
-function_line(Line) --> non_significant_line(), { Line = "" }.
-function_line(Line) --> instruction_set(Line).
 
 % Write string
-instruction_set(InstructionSet) --> function_call("_print_pascal_string", [Label], "4"), { append(["Write(",Label,");"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> function_call("_print_pascal_string", [Label], "4"), { append([Indent,"Write(",Label,");"], InstructionSet) }.
 %TODO more instructions
 
 function_call(FunctionName) --> call_instruction(FunctionName).
