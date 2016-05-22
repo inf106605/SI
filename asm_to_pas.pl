@@ -45,15 +45,15 @@ constant_data(Data) --> constant_string(Data).
 
 %------------------------------- string constant -------------------------------
 
-constant_string(ConstantString) --> whitespaces(), number(_), constant_string_part(StringPart), { ConstantString = StringPart }.
-constant_string_part(StringPart) --> maybe_whitespaces(), ",", maybe_whitespaces(), number(Number), constant_string_part(NextStringPart), { append(["#", Number, NextStringPart], StringPart) }.
-constant_string_part(StringPart) --> maybe_whitespaces(), ",", maybe_whitespaces(), string(String), constant_string_part(NextStringPart), { append(["'", String, "'", NextStringPart], StringPart) }.
-constant_string_part(StringPart) --> "", { StringPart = "" }.
+constant_string(ConstantString) --> whitespaces(), number(_), constant_string_parts(StringPart), { ConstantString = StringPart }.
+constant_string_parts(StringPart) --> maybe_whitespaces(), ",", maybe_whitespaces(), number(Number), constant_string_parts(NextStringPart), { append(["#", Number, NextStringPart], StringPart) }.
+constant_string_parts(StringPart) --> maybe_whitespaces(), ",", maybe_whitespaces(), string(String), constant_string_parts(NextStringPart), { append(["'", String, "'", NextStringPart], StringPart) }.
+constant_string_parts(StringPart) --> "", { StringPart = "" }.
 
 string(String) --> "'", string_part(StringPart), "'", { String = StringPart }.
 string_part(StringPart) --> string_char(Char), string_part(NextStringPart), { append(Char, NextStringPart, StringPart) }.
 string_part(StringPart) --> "", { StringPart = "" }.
-string_char(Char) --> [C], { C \= '\n', C \= '\'', Char = [C] }.
+string_char(Char) --> [C], { C \= 10, C \= 39, Char = [C] }.
 
 %---------------------------------- FUNCTIONS ----------------------------------
 
@@ -70,12 +70,12 @@ main_function_header() --> function_header("main").
 
 function_body(Body) --> non_significant_line(), function_body(BodyPart), { Body = "" }.
 function_body(Body) --> instruction_set("\t", Line), function_body(BodyPart), { append(Line, BodyPart, Body) }.
-function_body(Body) --> return_instruction(), { Body = "\n" }.
+function_body(Body) --> return_instruction(), { Body = "" }.
 
 %--------------------------------- INSTRUCTION ---------------------------------
 
 % Write string
-instruction_set(Indent, InstructionSet) --> function_call("_print_pascal_string", [Label], "4"), { append([Indent,"Write(",Label,");"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> function_call("_print_pascal_string", [Label], "4"), { append([Indent,"Write(",Label,");\n"], InstructionSet) }.
 %TODO more instructions
 
 function_call(FunctionName) --> call_instruction(FunctionName).

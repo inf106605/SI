@@ -15,10 +15,15 @@
 	extern  _print_uint32
 
 	section .text
-msg:
+msg1:
 	db  14, 'Hello, World!', 10
+msg2:
+	db  22, 'Goodbye, Cruel World!', 10
 _main:
-	push    msg
+	push    msg1
+	call    _print_pascal_string
+	add     esp, 4
+	push    msg2
 	call    _print_pascal_string
 	add     esp, 4
 	ret
