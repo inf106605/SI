@@ -68,7 +68,7 @@ main_function_header() --> function_header("main").
 
 %-------------------------------- function body --------------------------------
 
-function_body(Body) --> non_significant_line(), function_body(BodyPart), { Body = "" }.
+function_body(Body) --> non_significant_line(), function_body(Body).
 function_body(Body) --> instruction_set("\t", Line), function_body(BodyPart), { append(Line, BodyPart, Body) }.
 function_body(Body) --> return_instruction(), { Body = "" }.
 
@@ -82,6 +82,8 @@ function_call(FunctionName) --> call_instruction(FunctionName).
 function_call(FunctionName, Params, StackSpace) --> push_parameters(Params), non_significant_lines(), call_instruction(FunctionName), non_significant_lines(), release_stack_instruction(StackSpace).
 push_parameters([Param|Params]) --> push_instruction(Param), non_significant_lines(), push_parameters(Params).
 push_parameters([Param]) --> push_instruction(Param).
+
+%--------------------------- assembler instructions ----------------------------
 
 push_instruction(Param) --> instruction("push", [Param]).
 call_instruction(Param) --> instruction("call", [Param]).
@@ -144,4 +146,4 @@ digit(Digit) --> [DigitCode], { code_type(DigitCode, digit), Digit = [DigitCode]
 
 no_newline_characters() --> no_newline_character(), no_newline_characters().
 no_newline_characters() --> no_newline_character().
-no_newline_character() --> [C], { C \= '\n' }.
+no_newline_character() --> [C], { C \= 10 }.

@@ -15,15 +15,22 @@
 	extern  _print_uint32
 
 	section .text
+
+; Constants
 msg1:
 	db  14, 'Hello, World!', 10
 msg2:
 	db  22, 'Goodbye, Cruel World!', 10
+
+; Main function
 _main:
+	; Write first messsage to console
 	push    msg1
 	call    _print_pascal_string
 	add     esp, 4
+	; Write second messsage to console
 	push    msg2
 	call    _print_pascal_string
 	add     esp, 4
+	; Return
 	ret
