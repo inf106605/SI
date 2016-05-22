@@ -68,21 +68,43 @@ main_function_header() --> function_header("main").
 
 %-------------------------------- function body --------------------------------
 
-function_body(Body) --> function_line(Line), "\n", function_body(BodyPart), { append(Line, BodyPart, Body) }.
-function_body(Body) --> return_instruction(Return), "\n", { Body = Return }.
+function_body(Body) --> function_line(Line), function_body(BodyPart), { append(Line, BodyPart, Body) }.
+function_body(Body) --> return_instruction(), { Body = "\n" }.
 
 %--------------------------------- INSTRUCTION ---------------------------------
-
-return_instruction(Return) --> maybe_whitespaces(), "ret", non_significant_thing(), { Return = "\n" }.
 	
-function_line(Line) --> non_significant_thing(), { Line = "" }.
-%TODO real instructions
+function_line(Line) --> non_significant_line(), { Line = "" }.
+function_line(Line) --> instruction_set(Line).
+
+% Write string
+instruction_set(InstructionSet) --> function_call("_print_pascal_string", [Label], "4"), { append(["Write(",Label,");"], InstructionSet) }.
+%TODO more instructions
+
+function_call(FunctionName) --> call_instruction(FunctionName).
+function_call(FunctionName, Params, StackSpace) --> push_parameters(Params), non_significant_lines(), call_instruction(FunctionName), non_significant_lines(), release_stack_instruction(StackSpace).
+push_parameters([Param|Params]) --> push_instruction(Param), non_significant_lines(), push_parameters(Params).
+push_parameters([Param]) --> push_instruction(Param).
+
+push_instruction(Param) --> instruction("push", [Param]).
+call_instruction(Param) --> instruction("call", [Param]).
+release_stack_instruction(Param) --> add_instruction("esp", Param).
+add_instruction(Param1, Param2) --> instruction("add", [Param1,Param2]).
+return_instruction() --> instruction("ret", []).
+
+instruction(Instruction, Params) --> maybe_whitespaces(), name(Instruction), parameters(Params), non_significant_thing(), "\n".
+parameters([]) --> "".
+parameters(Params) --> whitespaces(), a_parameters(Params).
+a_parameters([Param|Params]) --> maybe_whitespaces(), name_or_number(Param), maybe_whitespaces(), ",", a_parameters(Params).
+a_parameters([Param]) --> maybe_whitespaces(), name_or_number(Param).
 
 %------------------------------------ LABEL ------------------------------------
 
 label(Name) --> maybe_whitespaces(), name(Name), ":", non_significant_thing(), "\n".
 
 %------------------------------------ NAME -------------------------------------
+
+name_or_number(NameOrNumber) --> name(NameOrNumber).
+name_or_number(NameOrNumber) --> number(NameOrNumber).
 
 name(Name) --> first_name_character(Char), rest_of_name(RestOfName), { append(Char, RestOfName, Name) }. %not sure if it is good - check assembler documentation
 rest_of_name(Name) --> name_character(Char), rest_of_name(RestOfName), { append(Char, RestOfName, Name) }.
@@ -119,7 +141,7 @@ whitespace() --> " " | "\t".
 letter(Letter) --> [LetterCode], { code_type(LetterCode, alpha), Letter = [LetterCode] }.
 
 number(Number) --> digit(Digit), number(NumberPart), { append(Digit, NumberPart, Number) }.
-number(Number) --> "", { Number = "" }.
+number(Number) --> digit(Digit), { Number = Digit }.
 digit(Digit) --> [DigitCode], { code_type(DigitCode, digit), Digit = [DigitCode] }.
 
 no_newline_characters() --> no_newline_character(), no_newline_characters().

@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 
+extern "C"
 void print_pascal_string(uint8_t p_str[256])
 {
 	char *c_str = (char*)malloc(p_str[0]+1);
@@ -13,31 +14,37 @@ void print_pascal_string(uint8_t p_str[256])
 	free(c_str);
 }
 
+extern "C"
 void print_int8(int8_t i)
 {
 	printf("%i\n", (int)i);
 }
 
+extern "C"
 void print_uint8(uint8_t i)
 {
 	printf("%u\n", (int)i);
 }
 
+extern "C"
 void print_int16(int16_t i)
 {
 	printf("%i\n", (int)i);
 }
 
+extern "C"
 void print_uint16(uint16_t i)
 {
 	printf("%u\n", (int)i);
 }
 
+extern "C"
 void print_int32(int32_t i)
 {
 	printf("%i\n", (int)i);
 }
 
+extern "C"
 void print_uint32(uint32_t i)
 {
 	printf("%u\n", (int)i);
