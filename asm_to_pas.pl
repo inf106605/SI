@@ -59,7 +59,7 @@ variable_type(Type) --> "resb", whitespaces(), "1", { Type = "byte" }.
 % word
 variable_type(Type) --> "resw", whitespaces(), "1", { Type = "word" }.
 % double
-variable_type(Type) --> "resd", whitespaces(), "1", { Type = "double" }.
+variable_type(Type) --> "resd", whitespaces(), "1", { Type = "dword" }.
 
 %---------------------------------- CONSTANTS ----------------------------------
 
@@ -102,8 +102,20 @@ function_body(Body) --> return_instruction(), { Body = "" }.
 
 %--------------------------------- INSTRUCTION ---------------------------------
 
-% Write string
+% Read
+instruction_set(Indent, InstructionSet) --> function_call("_read_pascal_string", [Label], "4"), { append([Indent,"Read(",Label,");\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> function_call("_read_uint8"), mov_to_var_instruction(Label, "al"), { append([Indent,"Read(",Label,");\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> function_call("_read_uint16"), mov_to_var_instruction(Label, "ax"), { append([Indent,"Read(",Label,");\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> function_call("_read_uint32"), mov_to_var_instruction(Label, "eax"), { append([Indent,"Read(",Label,");\n"], InstructionSet) }.
+% Write
 instruction_set(Indent, InstructionSet) --> function_call("_print_pascal_string", [Label], "4"), { append([Indent,"Write(",Label,");\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> function_call("_println_pascal_string", [Label], "4"), { append([Indent,"Writeln(",Label,");\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> function_call("_print_uint8", [LabelWithType], "4"), { append(["dword [", Label, "]"], LabelWithType), append([Indent,"Write(",Label,");\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> function_call("_println_uint8", [LabelWithType], "4"), { append(["dword [", Label, "]"], LabelWithType), append([Indent,"Writeln(",Label,");\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> function_call("_print_uint16", [LabelWithType], "4"), { append(["dword [", Label, "]"], LabelWithType), append([Indent,"Write(",Label,");\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> function_call("_println_uint16", [LabelWithType], "4"), { append(["dword [", Label, "]"], LabelWithType), append([Indent,"Writeln(",Label,");\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> function_call("_print_uint32", [LabelWithType], "4"), { append(["dword [", Label, "]"], LabelWithType), append([Indent,"Write(",Label,");\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> function_call("_println_uint32", [LabelWithType], "4"), { append(["dword [", Label, "]"], LabelWithType), append([Indent,"Writeln(",Label,");\n"], InstructionSet) }.
 %TODO more instructions
 
 function_call(FunctionName) --> call_instruction(FunctionName).
@@ -113,6 +125,9 @@ push_parameters([Param]) --> push_instruction(Param).
 
 %--------------------------- assembler instructions ----------------------------
 
+mov_from_var_instruction(Param1, Param2) --> mov_instruction(Param1, Val), { append(["[",Param2,"]"], Val) }.
+mov_to_var_instruction(Param1, Param2) --> mov_instruction(Val, Param2), { append(["[",Param1,"]"], Val) }.
+mov_instruction(Param1, Param2) --> instruction("mov", [Param1,Param2]).
 push_instruction(Param) --> instruction("push", [Param]).
 call_instruction(Param) --> instruction("call", [Param]).
 release_stack_instruction(Param) --> add_instruction("esp", Param).
@@ -122,17 +137,20 @@ return_instruction() --> instruction("ret", []).
 instruction(Instruction, Params) --> maybe_whitespaces(), name(Instruction), parameters(Params), non_significant_thing(), "\n".
 parameters([]) --> "".
 parameters(Params) --> whitespaces(), a_parameters(Params).
-a_parameters([Param|Params]) --> maybe_whitespaces(), name_or_number(Param), maybe_whitespaces(), ",", a_parameters(Params).
-a_parameters([Param]) --> maybe_whitespaces(), name_or_number(Param).
+a_parameters([Param|Params]) --> maybe_whitespaces(), parameter(Param), maybe_whitespaces(), ",", a_parameters(Params).
+a_parameters([Param]) --> maybe_whitespaces(), parameter(Param).
+parameter(Param) --> parameter_character(Char), parameter(RestOfParam), { append(Char, RestOfParam, Param) }.
+parameter(Param) --> parameter_character(Param).
+parameter_character(Char) --> name_character(Char).
+parameter_character(Char) --> "[", { Char = "[" }.
+parameter_character(Char) --> "]", { Char = "]" }.
+parameter_character(Char) --> " ", { Char = " " }. %because of reasons
 
 %------------------------------------ LABEL ------------------------------------
 
 label(Name) --> maybe_whitespaces(), name(Name), ":", non_significant_thing(), "\n".
 
 %------------------------------------ NAME -------------------------------------
-
-name_or_number(NameOrNumber) --> name(NameOrNumber).
-name_or_number(NameOrNumber) --> number(NameOrNumber).
 
 name(Name) --> first_name_character(Char), rest_of_name(RestOfName), { append(Char, RestOfName, Name) }. %not sure if it is good - check assembler documentation
 rest_of_name(Name) --> name_character(Char), rest_of_name(RestOfName), { append(Char, RestOfName, Name) }.
