@@ -78,8 +78,9 @@ function_body(Body) --> return_instruction(), { Body = "" }.
 instruction_set(Indent, InstructionSet) --> function_call("_print_pascal_string", [Label], "4"), { append([Indent, "Write(",Label,");\n"], InstructionSet) }.
 instruction_set(Indent, InstructionSet) --> mov_instruction(Register, Label), non_significant_lines(), add_instruction(Register,Label2), non_significant_lines(), mov_instruction(Label3,Register), { append([Indent,Label3,":=",Label,"+",Label2,";\n"], InstructionSet) }.
 instruction_set(Indent, InstructionSet) --> mov_instruction(Register, Label), non_significant_lines(), sub_instruction(Register,Label2), non_significant_lines(), mov_instruction(Label3,Register), { append([Indent,Label3,":=",Label,"-",Label2,";\n"], InstructionSet) }.
-instruction_set(Indent, InstructionSet) --> mov_instruction(Register, Label), dec_instruction(Register), mov_instruction(Label,Register), { append([Indent,Label,":=",Label,"-","1;\n"], InstructionSet) }.
-instruction_set(Indent, InstructionSet) --> mov_instruction(Register, Label), inc_instruction(Register), mov_instruction(Label,Register), { append([Indent,Label,":=",Label,"+","1;\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> mov_instruction(Register, Label), non_significant_lines() inc_instruction(Register), 
+non_significant_lines(), mov_instruction(Label,Register), { append([Indent,Label,":=",Label,"+","1;\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> mov_instruction(Register, Label), non_significant_lines(), dec_instruction(Register), non_significant_lines(), mov_instruction(Label,Register), { append([Indent,Label,":=",Label,"-","1;\n"], InstructionSet) }.
 %TODO more instructions
 
 function_call(FunctionName) --> call_instruction(FunctionName).
