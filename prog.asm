@@ -24,6 +24,9 @@ msg2:
 
 ; Main function
 _main:
+	mov		eax, variable1
+	dec		eax
+	mov		variable1, eax 
 	; Write first messsage to console
 	push    msg1
 	call    _print_pascal_string
