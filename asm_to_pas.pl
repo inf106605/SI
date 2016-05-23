@@ -17,21 +17,49 @@ main() :-
 program(Program) -->
 	program_header(Header),
 	non_significant_lines(),
+	maybe_bss_section(),
+	non_significant_lines(),
+	variables(Variables),
+	non_significant_lines(),
+	text_section(),
+	non_significant_lines(),
 	constants(Constants),
 	non_significant_lines(),
 	main_function(Main),
 	end_non_significant_lines(),
-	{ append([Header, Constants, Main], Program) }.
+	{ append([Header, Constants, Variables, Main], Program) }.
 
 %----------------------------------- HEADER ------------------------------------
 
-program_header(Header) --> program_header_lines(), last_program_header_line(), { Header = "PROGRAM Prog;\n" }.
+program_header(Header) --> program_header_lines(), { Header = "PROGRAM Prog;\n" }.
 program_header_lines() --> program_header_line(), program_header_lines().
 program_header_lines() --> "".
 program_header_line() --> non_significant_line() | program_header_global_line() | program_header_extern_line().
 program_header_global_line() --> maybe_whitespaces(), "global", whitespaces(), name(_), non_significant_thing(), "\n".
 program_header_extern_line() --> maybe_whitespaces(), "extern", whitespaces(), name(_), non_significant_thing(), "\n".
-last_program_header_line() --> maybe_whitespaces(), "section", whitespaces(),".text", non_significant_thing(), "\n".
+
+%----------------------------------- HEADER ------------------------------------
+
+maybe_bss_section() --> "" | maybe_whitespaces(), section("bss").
+text_section() --> maybe_whitespaces(), section("text").
+section(Section) --> maybe_whitespaces(), "section", whitespaces(), ".", name(Section), non_significant_thing(), "\n".
+
+%---------------------------------- VARIABLES ----------------------------------
+
+variables(Variables) --> variable_lines(VariableLines), { append("\nVAR\n", VariableLines, Variables) }.
+variables(Variables) --> "", { Variables = "" }.
+variable_lines(VariableLines) --> variable_line(VariableLine), non_significant_lines(), variable_lines(RestOfVariableLines), { append(VariableLine, RestOfVariableLines, VariableLines) }.
+variable_lines(VariableLines) --> variable_line(VariableLine), { VariableLines = VariableLine }.
+variable_line(VariableLine) --> label(Name), non_significant_lines(), maybe_whitespaces(), variable_type(Type), non_significant_thing(), "\n", { append(["\t", Name, " : ", Type, ";\n"], VariableLine) }.
+
+% string
+variable_type(Type) --> "resb", whitespaces(), "256", { Type = "string" }.
+% byte
+variable_type(Type) --> "resb", whitespaces(), "1", { Type = "byte" }.
+% word
+variable_type(Type) --> "resw", whitespaces(), "1", { Type = "word" }.
+% double
+variable_type(Type) --> "resd", whitespaces(), "1", { Type = "double" }.
 
 %---------------------------------- CONSTANTS ----------------------------------
 
@@ -39,13 +67,13 @@ constants(Constants) --> constant_lines(ConstantLines), { append("\nCONST\n", Co
 constants(Constants) --> "", { Constants = "" }.
 constant_lines(ConstantLines) --> constant_line(ConstantLine), non_significant_lines(), constant_lines(RestOfConstantLines), { append(ConstantLine, RestOfConstantLines, ConstantLines) }.
 constant_lines(ConstantLines) --> constant_line(ConstantLine), { ConstantLines = ConstantLine }.
-constant_line(ConstantLine) --> label(Name), non_significant_lines(), maybe_whitespaces(), "db", constant_data(Data), non_significant_thing(), "\n", { append(["\t", Name, " = ", Data, ";\n"], ConstantLine) }.
+constant_line(ConstantLine) --> label(Name), non_significant_lines(), maybe_whitespaces(), constant_data(Data), non_significant_thing(), "\n", { append(["\t", Name, " = ", Data, ";\n"], ConstantLine) }.
 constant_data(Data) --> constant_string(Data).
 %TODO more types
 
 %------------------------------- string constant -------------------------------
 
-constant_string(ConstantString) --> whitespaces(), number(_), constant_string_parts(StringPart), { ConstantString = StringPart }.
+constant_string(ConstantString) --> "db", whitespaces(), number(_), constant_string_parts(StringPart), { ConstantString = StringPart }.
 constant_string_parts(StringPart) --> maybe_whitespaces(), ",", maybe_whitespaces(), number(Number), constant_string_parts(NextStringPart), { append(["#", Number, NextStringPart], StringPart) }.
 constant_string_parts(StringPart) --> maybe_whitespaces(), ",", maybe_whitespaces(), string(String), constant_string_parts(NextStringPart), { append(["'", String, "'", NextStringPart], StringPart) }.
 constant_string_parts(StringPart) --> "", { StringPart = "" }.

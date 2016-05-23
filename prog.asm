@@ -13,7 +13,20 @@
 	extern  _print_uint16
 	extern  _print_int32
 	extern  _print_uint32
+	
+; Section with 0-initialized variables
+	section .bss
+	
+str_var:
+	resb 256
+byte_var:
+	resb 1
+word_var:
+	resw 1
+double_var:
+	resd 1
 
+; Section with constants and program instructions
 	section .text
 
 ; Constants
