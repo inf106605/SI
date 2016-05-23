@@ -117,8 +117,8 @@ instruction_set(Indent, InstructionSet) --> function_call("_println_uint16", [La
 instruction_set(Indent, InstructionSet) --> function_call("_print_uint32", [LabelWithType], "4"), { append(["dword [", Label, "]"], LabelWithType), append([Indent,"Write(",Label,");\n"], InstructionSet) }.
 instruction_set(Indent, InstructionSet) --> function_call("_println_uint32", [LabelWithType], "4"), { append(["dword [", Label, "]"], LabelWithType), append([Indent,"Writeln(",Label,");\n"], InstructionSet) }.
 % Arithmetic
-instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(Register, Label), non_significant_lines(), add_var_instruction(Register,Label2), non_significant_lines(), mov_to_var_instruction(Label3,Register), { append([Indent,Label3,":=",Label,"+",Label2,";\n"], InstructionSet) }.
-instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(Register, Label), non_significant_lines(), sub_var_instruction(Register,Label2), non_significant_lines(), mov_to_var_instruction(Label3,Register), { append([Indent,Label3,":=",Label,"-",Label2,";\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(_, Label), non_significant_lines(), add_var_instruction(_,Label2), non_significant_lines(), mov_to_var_instruction(Label3,_), { append([Indent,Label3,":=",Label,"+",Label2,";\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(_, Label), non_significant_lines(), sub_var_instruction(_,Label2), non_significant_lines(), mov_to_var_instruction(Label3,_), { append([Indent,Label3,":=",Label,"-",Label2,";\n"], InstructionSet) }.
 instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(Register, Label), non_significant_lines() inc_instruction(Register), 
 	non_significant_lines(), mov_to_var_instruction(Label,Register), { append([Indent,Label,":=",Label,"+","1;\n"], InstructionSet) }.
 instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(Register, Label), non_significant_lines(), dec_instruction(Register), non_significant_lines(), mov_to_var_instruction(Label,Register), { append([Indent,Label,":=",Label,"-","1;\n"], InstructionSet) }.

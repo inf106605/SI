@@ -72,7 +72,7 @@ _main:
 	
 	; A few arithmetical stuff on user input
 	mov		eax, [word_var]
-	sub		eax, [byte_var]
+	sub		al, [byte_var]
 	mov		[word_var], eax
 	mov		eax, [byte_var]
 	dec		eax
