@@ -116,6 +116,12 @@ instruction_set(Indent, InstructionSet) --> function_call("_print_uint16", [Labe
 instruction_set(Indent, InstructionSet) --> function_call("_println_uint16", [LabelWithType], "4"), { append(["dword [", Label, "]"], LabelWithType), append([Indent,"Writeln(",Label,");\n"], InstructionSet) }.
 instruction_set(Indent, InstructionSet) --> function_call("_print_uint32", [LabelWithType], "4"), { append(["dword [", Label, "]"], LabelWithType), append([Indent,"Write(",Label,");\n"], InstructionSet) }.
 instruction_set(Indent, InstructionSet) --> function_call("_println_uint32", [LabelWithType], "4"), { append(["dword [", Label, "]"], LabelWithType), append([Indent,"Writeln(",Label,");\n"], InstructionSet) }.
+% Arithmetic
+instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(Register, Label), non_significant_lines(), add_var_instruction(Register,Label2), non_significant_lines(), mov_to_var_instruction(Label3,Register), { append([Indent,Label3,":=",Label,"+",Label2,";\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(Register, Label), non_significant_lines(), sub_var_instruction(Register,Label2), non_significant_lines(), mov_to_var_instruction(Label3,Register), { append([Indent,Label3,":=",Label,"-",Label2,";\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(Register, Label), non_significant_lines() inc_instruction(Register), 
+	non_significant_lines(), mov_to_var_instruction(Label,Register), { append([Indent,Label,":=",Label,"+","1;\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(Register, Label), non_significant_lines(), dec_instruction(Register), non_significant_lines(), mov_to_var_instruction(Label,Register), { append([Indent,Label,":=",Label,"-","1;\n"], InstructionSet) }.
 %TODO more instructions
 
 function_call(FunctionName) --> call_instruction(FunctionName).
@@ -125,13 +131,18 @@ push_parameters([Param]) --> push_instruction(Param).
 
 %--------------------------- assembler instructions ----------------------------
 
-mov_from_var_instruction(Param1, Param2) --> mov_instruction(Param1, Val), { append(["[",Param2,"]"], Val) }.
-mov_to_var_instruction(Param1, Param2) --> mov_instruction(Val, Param2), { append(["[",Param1,"]"], Val) }.
+mov_from_var_instruction(Param1, Param2) --> mov_instruction(Param1, Var), { append(["[",Param2,"]"], Var) }.
+mov_to_var_instruction(Param1, Param2) --> mov_instruction(Var, Param2), { append(["[",Param1,"]"], Var) }.
 mov_instruction(Param1, Param2) --> instruction("mov", [Param1,Param2]).
 push_instruction(Param) --> instruction("push", [Param]).
 call_instruction(Param) --> instruction("call", [Param]).
 release_stack_instruction(Param) --> add_instruction("esp", Param).
+add_var_instruction(Param1, Param2) --> instruction("add", [Param1,Var]), { append(["[",Param2,"]"], Var) }.
 add_instruction(Param1, Param2) --> instruction("add", [Param1,Param2]).
+sub_var_instruction(Param1, Param2) --> instruction("sub", [Param1,Var]), { append(["[",Param2,"]"], Var) }.
+sub_instruction(Param1, Param2) --> instruction("sub", [Param1,Param2]).
+dec_instruction(Param1) --> instruction("dec", [Param1]).
+inc_instruction(Param1) --> instruction("inc", [Param1]).
 return_instruction() --> instruction("ret", []).
 
 instruction(Instruction, Params) --> maybe_whitespaces(), name(Instruction), parameters(Params), non_significant_thing(), "\n".

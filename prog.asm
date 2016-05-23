@@ -70,6 +70,14 @@ _main:
 	call	_read_uint32
 	mov		[double_var], eax
 	
+	; A few arithmetical stuff on user input
+	mov		eax, [word_var]
+	sub		eax, [byte_var]
+	mov		[word_var], eax
+	mov		eax, [byte_var]
+	dec		eax
+	mov		[byte_var], eax
+	
 	; Write second messsage to console
 	push    msg2
 	call    _print_pascal_string
