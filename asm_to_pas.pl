@@ -50,7 +50,7 @@ variables(Variables) --> variable_lines(VariableLines), { append("\nVAR\n", Vari
 variables(Variables) --> "", { Variables = "" }.
 variable_lines(VariableLines) --> variable_line(VariableLine), non_significant_lines(), variable_lines(RestOfVariableLines), { append(VariableLine, RestOfVariableLines, VariableLines) }.
 variable_lines(VariableLines) --> variable_line(VariableLine), { VariableLines = VariableLine }.
-variable_line(VariableLine) --> label(Name), non_significant_lines(), maybe_whitespaces(), variable_type(Type), non_significant_thing(), "\n", { append(["\t", Name, " : ", Type, ";\n"], VariableLine) }.
+variable_line(VariableLine) --> variable_label(Name), non_significant_lines(), maybe_whitespaces(), variable_type(Type), non_significant_thing(), "\n", { append(["\t", Name, " : ", Type, ";\n"], VariableLine) }.
 
 % string
 variable_type(Type) --> "resb", whitespaces(), "256", { Type = "string" }.
@@ -61,17 +61,21 @@ variable_type(Type) --> "resw", whitespaces(), "1", { Type = "word" }.
 % double
 variable_type(Type) --> "resd", whitespaces(), "1", { Type = "dword" }.
 
+variable_label(Name) --> label([FirstChar|RestOfName]), { FirstChar\=95, append([FirstChar],RestOfName,Name) }.
+
 %---------------------------------- CONSTANTS ----------------------------------
 
 constants(Constants) --> constant_lines(ConstantLines), { append("\nCONST\n", ConstantLines, Constants) }.
 constants(Constants) --> "", { Constants = "" }.
 constant_lines(ConstantLines) --> constant_line(ConstantLine), non_significant_lines(), constant_lines(RestOfConstantLines), { append(ConstantLine, RestOfConstantLines, ConstantLines) }.
 constant_lines(ConstantLines) --> constant_line(ConstantLine), { ConstantLines = ConstantLine }.
-constant_line(ConstantLine) --> label(Name), non_significant_lines(), maybe_whitespaces(), constant_data(Data), non_significant_thing(), "\n", { append(["\t", Name, " = ", Data, ";\n"], ConstantLine) }.
+constant_line(ConstantLine) --> constant_label(Name), non_significant_lines(), maybe_whitespaces(), constant_data(Data), non_significant_thing(), "\n", { append(["\t", Name, " = ", Data, ";\n"], ConstantLine) }.
 constant_data(Data) --> constant_byte(Data).
 constant_data(Data) --> constant_word(Data).
 constant_data(Data) --> constant_dword(Data).
 constant_data(Data) --> constant_string(Data).
+
+constant_label(Name) --> label([FirstChar|RestOfName]), { FirstChar\=95, append([FirstChar],RestOfName,Name) }.
 
 %------------------------------- string constant -------------------------------
 
@@ -86,10 +90,11 @@ string_part(StringPart) --> "", { StringPart = "" }.
 string_char(Char) --> [C], { C \= 10, C \= 39, Char = [C] }.
 
 %------------------------------- constant number -------------------------------
- constant_byte(ConstantByte) --> "db", whitespaces(), number(Number), { ConstantByte = Number}.
- constant_word(ConstantByte) --> "dw", whitespaces(), number(Number), { ConstantByte = Number}.
- constant_dword(ConstantByte) --> "dd", whitespaces(), number(Number), { ConstantByte = Number}.
- 
+
+constant_byte(ConstantByte) --> "db", whitespaces(), number(Number), { ConstantByte = Number}.
+constant_word(ConstantByte) --> "dw", whitespaces(), number(Number), { ConstantByte = Number}.
+constant_dword(ConstantByte) --> "dd", whitespaces(), number(Number), { ConstantByte = Number}.
+
 %--------------------------------- PROCEDURES ----------------------------------
 
 procedure_header(Name) --> procedure_label([95|Name]).
