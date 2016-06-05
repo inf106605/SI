@@ -40,6 +40,9 @@ word_var:
 double_var:
 	resd 1
 
+i:
+	resd 1
+
 ; Section with constants and program instructions
 	section .text
 
@@ -120,10 +123,19 @@ _main:
 	
 	call	_pDoMath
 	
+	; Do a loopty loop (x3)
+	mov		ecx, 1
+	.loopBegin:
+	mov		[i], ecx
 	; Write second messsage to console
 	push    msg2
 	call    _print_pascal_string
 	add     esp, 4
+	; End of the loop
+	mov		ecx, [i]
+	inc		ecx
+	cmp		ecx, 3
+	jle		.loopBegin
 	
 	call _pWriteUserVariables
 	

@@ -112,11 +112,16 @@ main_procedure_header() --> procedure_label("main").
 
 %------------------------------- procedure body --------------------------------
 
-procedure_body(Body) --> non_significant_line(), procedure_body(Body).
-procedure_body(Body) --> instruction_set("\t", Line), procedure_body(BodyPart), { append(Line, BodyPart, Body) }.
-procedure_body(Body) --> return_instruction(), { Body = "" }.
+procedure_body(Body) --> block_body("", Body), non_significant_lines(), return_instruction().
+
+block_body(Indent, Body) --> non_significant_line(), block_body(Indent, Body).
+block_body(Indent, Body) --> instruction_set([9|Indent], Line), block_body(Indent, BodyPart), { append(Line, BodyPart, Body) }.
+block_body(Indent, Body) --> "", { Body = "" }.
 
 %--------------------------------- INSTRUCTION ---------------------------------
+
+% Blocks
+block(Indent, Block) --> block_body(Indent, Body), { append([Indent,"begin\n",Body,Indent,"end;\n"], Block) }.
 
 % Read
 instruction_set(Indent, InstructionSet) --> procedure_call("_read_pascal_string", [Label], "4"), { append([Indent,"Read(",Label,");\n"], InstructionSet) }.
@@ -140,7 +145,11 @@ instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(_, Label), 
 instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(Register, Label), non_significant_lines() inc_instruction(Register), 
 	non_significant_lines(), mov_to_var_instruction(Label,Register), { append([Indent,Label," := ",Label," + ","1;\n"], InstructionSet) }.
 instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(Register, Label), non_significant_lines(), dec_instruction(Register), non_significant_lines(), mov_to_var_instruction(Label,Register), { append([Indent,Label," := ",Label," - ","1;\n"], InstructionSet) }.
-%TODO more instructions
+% Loops
+instruction_set(Indent, InstructionSet) --> mov_instruction("ecx",StartValue), non_significant_lines(), label(Label), non_significant_lines(), mov_to_var_instruction(Counter, "ecx"),
+	non_significant_lines(), block(Indent, Block), non_significant_lines(),
+	mov_from_var_instruction("ecx", Counter), non_significant_lines(), inc_instruction("ecx"), non_significant_lines(), cmp_instruction("ecx", EndValue), non_significant_lines(), jle_instruction(Label),
+	{ append([Indent,"for ",Counter," := ",StartValue," to ",EndValue," do\n",Block], InstructionSet) }.
 
 procedure_call(ProcedureName) --> call_instruction(ProcedureName).
 procedure_call(ProcedureName, Params, StackSpace) --> push_parameters(Params), non_significant_lines(), call_instruction(ProcedureName), non_significant_lines(), release_stack_instruction(StackSpace).
@@ -153,14 +162,17 @@ mov_from_var_instruction(Param1, Param2) --> mov_instruction(Param1, Var), { app
 mov_to_var_instruction(Param1, Param2) --> mov_instruction(Var, Param2), { append(["[",Param1,"]"], Var) }.
 mov_instruction(Param1, Param2) --> instruction("mov", [Param1,Param2]).
 push_instruction(Param) --> instruction("push", [Param]).
+pop_instruction(Param) --> instruction("pop", [Param]).
 call_instruction(Param) --> instruction("call", [Param]).
 release_stack_instruction(Param) --> add_instruction("esp", Param).
 add_var_instruction(Param1, Param2) --> instruction("add", [Param1,Var]), { append(["[",Param2,"]"], Var) }.
 add_instruction(Param1, Param2) --> instruction("add", [Param1,Param2]).
 sub_var_instruction(Param1, Param2) --> instruction("sub", [Param1,Var]), { append(["[",Param2,"]"], Var) }.
 sub_instruction(Param1, Param2) --> instruction("sub", [Param1,Param2]).
-dec_instruction(Param1) --> instruction("dec", [Param1]).
-inc_instruction(Param1) --> instruction("inc", [Param1]).
+dec_instruction(Param) --> instruction("dec", [Param]).
+inc_instruction(Param) --> instruction("inc", [Param]).
+cmp_instruction(Param1, Param2) --> instruction("cmp", [Param1,Param2]).
+jle_instruction(Param) --> instruction("jle", [Param]).
 return_instruction() --> instruction("ret", []).
 
 instruction(Instruction, Params) --> maybe_whitespaces(), name(Instruction), parameters(Params), non_significant_thing(), "\n".
@@ -168,15 +180,18 @@ parameters([]) --> "".
 parameters(Params) --> whitespaces(), a_parameters(Params).
 a_parameters([Param|Params]) --> maybe_whitespaces(), parameter(Param), maybe_whitespaces(), ",", a_parameters(Params).
 a_parameters([Param]) --> maybe_whitespaces(), parameter(Param).
-parameter(Param) --> parameter_character(Char), parameter(RestOfParam), { append(Char, RestOfParam, Param) }.
-parameter(Param) --> parameter_character(Param).
-parameter_character(Char) --> name_character(Char).
-parameter_character(Char) --> "[", { Char = "[" }.
-parameter_character(Char) --> "]", { Char = "]" }.
-parameter_character(Char) --> " ", { Char = " " }. %because of reasons
+parameter(Param) --> non_white_parameter_character(Char), rest_of_parameter(RestOfParam), { append(Char, RestOfParam, Param) }.
+rest_of_parameter(Param) --> parameter_character(Char), rest_of_parameter(RestOfParam), { append(Char, RestOfParam, Param) }.
+rest_of_parameter(Param) --> "", { Param="" }.
+parameter_character(Char) --> non_white_parameter_character(Char).
+parameter_character(Char) --> " ", { Char = " " }.
+non_white_parameter_character(Char) --> name_character(Char).
+non_white_parameter_character(Char) --> "[", { Char = "[" }.
+non_white_parameter_character(Char) --> "]", { Char = "]" }.
 
 %------------------------------------ LABEL ------------------------------------
 
+internal_label(Name) --> label(46|Name).
 label(Name) --> maybe_whitespaces(), name(Name), ":", non_significant_thing(), "\n".
 
 %------------------------------------ NAME -------------------------------------
