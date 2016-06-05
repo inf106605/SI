@@ -25,7 +25,7 @@ program(Program) -->
 	non_significant_lines(),
 	constants(Constants),
 	non_significant_lines(),
-	main_function(Main),
+	main_procedure(Main),
 	end_non_significant_lines(),
 	{ append([Header, Constants, Variables, Main], Program) }.
 
@@ -85,27 +85,27 @@ string_part(StringPart) --> string_char(Char), string_part(NextStringPart), { ap
 string_part(StringPart) --> "", { StringPart = "" }.
 string_char(Char) --> [C], { C \= 10, C \= 39, Char = [C] }.
 
-%-------------------------------- constant number --------------------------------
+%------------------------------- constant number -------------------------------
  constant_byte(ConstantByte) --> "db", whitespaces(), number(Number), { ConstantByte = Number}.
  constant_word(ConstantByte) --> "dw", whitespaces(), number(Number), { ConstantByte = Number}.
  constant_dword(ConstantByte) --> "dd", whitespaces(), number(Number), { ConstantByte = Number}.
  
-%---------------------------------- FUNCTIONS ----------------------------------
+%--------------------------------- PROCEDURES ----------------------------------
 
-function_header(Name) --> function_label([95|Name]).
+procedure_header(Name) --> procedure_label([95|Name]).
 
-function_label(Name) --> label(Name).
+procedure_label(Name) --> label(Name).
 
-%-------------------------------- main function --------------------------------
+%------------------------------- main procedure --------------------------------
 
-main_function(Main) --> main_function_header(), function_body(Body), { append(["\nBEGIN\n", Body, "END.\n"], Main) }.
-main_function_header() --> function_header("main").
+main_procedure(Main) --> main_procedure_header(), procedure_body(Body), { append(["\nBEGIN\n", Body, "END.\n"], Main) }.
+main_procedure_header() --> procedure_header("main").
 
 %-------------------------------- function body --------------------------------
 
-function_body(Body) --> non_significant_line(), function_body(Body).
-function_body(Body) --> instruction_set("\t", Line), function_body(BodyPart), { append(Line, BodyPart, Body) }.
-function_body(Body) --> return_instruction(), { Body = "" }.
+procedure_body(Body) --> non_significant_line(), procedure_body(Body).
+procedure_body(Body) --> instruction_set("\t", Line), procedure_body(BodyPart), { append(Line, BodyPart, Body) }.
+procedure_body(Body) --> return_instruction(), { Body = "" }.
 
 %--------------------------------- INSTRUCTION ---------------------------------
 
