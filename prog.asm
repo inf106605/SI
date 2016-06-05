@@ -51,6 +51,23 @@ msg2:
 constByte:
 	dd	14
 
+_pDoStuff:
+	; Read user string
+	push	str_var
+	call	_read_pascal_string
+	add		esp, 4
+	; Read user byte
+	call	_read_uint8
+	mov		[byte_var], al
+	; Read user word
+	call	_read_uint16
+	mov		[word_var], ax
+	; Read user double
+	call	_read_uint32
+	mov		[double_var], eax
+	; Return
+	ret
+
 ; Main function
 _main:
 	;mov		eax, [constByte]

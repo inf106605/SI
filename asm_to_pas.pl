@@ -25,9 +25,11 @@ program(Program) -->
 	non_significant_lines(),
 	constants(Constants),
 	non_significant_lines(),
+	maybe_non_main_procedures(Procedures),
+	non_significant_lines(),
 	main_procedure(Main),
 	end_non_significant_lines(),
-	{ append([Header, Constants, Variables, Main], Program) }.
+	{ append([Header, Constants, Variables, Procedures, Main], Program) }.
 
 %----------------------------------- HEADER ------------------------------------
 
@@ -97,14 +99,16 @@ constant_dword(ConstantByte) --> "dd", whitespaces(), number(Number), { Constant
 
 %--------------------------------- PROCEDURES ----------------------------------
 
-procedure_header(Name) --> procedure_label([95|Name]).
+maybe_non_main_procedures(Procedures) --> non_main_procedure(Procedure), non_significant_lines(), maybe_non_main_procedures(RestOfProcedures), { append(Procedure, RestOfProcedures, Procedures) }.
+maybe_non_main_procedures(Procedures) --> "", { Procedures="" }.
+non_main_procedure(Procedure) --> procedure_label([112|Name]), procedure_body(Body), { append(["\nprocedure ",Name,"();\nbegin\n",Body,"end;\n"], Procedure) }.
 
-procedure_label(Name) --> label(Name).
+procedure_label(Name) --> label([95|Name]).
 
 %------------------------------- main procedure --------------------------------
 
 main_procedure(Main) --> main_procedure_header(), procedure_body(Body), { append(["\nBEGIN\n", Body, "END.\n"], Main) }.
-main_procedure_header() --> procedure_header("main").
+main_procedure_header() --> procedure_label("main").
 
 %-------------------------------- function body --------------------------------
 
