@@ -110,7 +110,7 @@ procedure_label(Name) --> label([95|Name]).
 main_procedure(Main) --> main_procedure_header(), procedure_body(Body), { append(["\nBEGIN\n", Body, "END.\n"], Main) }.
 main_procedure_header() --> procedure_label("main").
 
-%-------------------------------- function body --------------------------------
+%------------------------------- procedure body --------------------------------
 
 procedure_body(Body) --> non_significant_line(), procedure_body(Body).
 procedure_body(Body) --> instruction_set("\t", Line), procedure_body(BodyPart), { append(Line, BodyPart, Body) }.
@@ -119,19 +119,21 @@ procedure_body(Body) --> return_instruction(), { Body = "" }.
 %--------------------------------- INSTRUCTION ---------------------------------
 
 % Read
-instruction_set(Indent, InstructionSet) --> function_call("_read_pascal_string", [Label], "4"), { append([Indent,"Read(",Label,");\n"], InstructionSet) }.
-instruction_set(Indent, InstructionSet) --> function_call("_read_uint8"), mov_to_var_instruction(Label, "al"), { append([Indent,"Read(",Label,");\n"], InstructionSet) }.
-instruction_set(Indent, InstructionSet) --> function_call("_read_uint16"), mov_to_var_instruction(Label, "ax"), { append([Indent,"Read(",Label,");\n"], InstructionSet) }.
-instruction_set(Indent, InstructionSet) --> function_call("_read_uint32"), mov_to_var_instruction(Label, "eax"), { append([Indent,"Read(",Label,");\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> procedure_call("_read_pascal_string", [Label], "4"), { append([Indent,"Read(",Label,");\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> procedure_call("_read_uint8"), mov_to_var_instruction(Label, "al"), { append([Indent,"Read(",Label,");\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> procedure_call("_read_uint16"), mov_to_var_instruction(Label, "ax"), { append([Indent,"Read(",Label,");\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> procedure_call("_read_uint32"), mov_to_var_instruction(Label, "eax"), { append([Indent,"Read(",Label,");\n"], InstructionSet) }.
 % Write
-instruction_set(Indent, InstructionSet) --> function_call("_print_pascal_string", [Label], "4"), { append([Indent,"Write(",Label,");\n"], InstructionSet) }.
-instruction_set(Indent, InstructionSet) --> function_call("_println_pascal_string", [Label], "4"), { append([Indent,"Writeln(",Label,");\n"], InstructionSet) }.
-instruction_set(Indent, InstructionSet) --> function_call("_print_uint8", [LabelWithType], "4"), { append(["dword [", Label, "]"], LabelWithType), append([Indent,"Write(",Label,");\n"], InstructionSet) }.
-instruction_set(Indent, InstructionSet) --> function_call("_println_uint8", [LabelWithType], "4"), { append(["dword [", Label, "]"], LabelWithType), append([Indent,"Writeln(",Label,");\n"], InstructionSet) }.
-instruction_set(Indent, InstructionSet) --> function_call("_print_uint16", [LabelWithType], "4"), { append(["dword [", Label, "]"], LabelWithType), append([Indent,"Write(",Label,");\n"], InstructionSet) }.
-instruction_set(Indent, InstructionSet) --> function_call("_println_uint16", [LabelWithType], "4"), { append(["dword [", Label, "]"], LabelWithType), append([Indent,"Writeln(",Label,");\n"], InstructionSet) }.
-instruction_set(Indent, InstructionSet) --> function_call("_print_uint32", [LabelWithType], "4"), { append(["dword [", Label, "]"], LabelWithType), append([Indent,"Write(",Label,");\n"], InstructionSet) }.
-instruction_set(Indent, InstructionSet) --> function_call("_println_uint32", [LabelWithType], "4"), { append(["dword [", Label, "]"], LabelWithType), append([Indent,"Writeln(",Label,");\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> procedure_call("_print_pascal_string", [Label], "4"), { append([Indent,"Write(",Label,");\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> procedure_call("_println_pascal_string", [Label], "4"), { append([Indent,"Writeln(",Label,");\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> procedure_call("_print_uint8", [LabelWithType], "4"), { append(["dword [", Label, "]"], LabelWithType), append([Indent,"Write(",Label,");\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> procedure_call("_println_uint8", [LabelWithType], "4"), { append(["dword [", Label, "]"], LabelWithType), append([Indent,"Writeln(",Label,");\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> procedure_call("_print_uint16", [LabelWithType], "4"), { append(["dword [", Label, "]"], LabelWithType), append([Indent,"Write(",Label,");\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> procedure_call("_println_uint16", [LabelWithType], "4"), { append(["dword [", Label, "]"], LabelWithType), append([Indent,"Writeln(",Label,");\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> procedure_call("_print_uint32", [LabelWithType], "4"), { append(["dword [", Label, "]"], LabelWithType), append([Indent,"Write(",Label,");\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> procedure_call("_println_uint32", [LabelWithType], "4"), { append(["dword [", Label, "]"], LabelWithType), append([Indent,"Writeln(",Label,");\n"], InstructionSet) }.
+% Call procedure
+instruction_set(Indent, InstructionSet) --> procedure_call([95,112|Name]), { append([Indent,Name,"();\n"], InstructionSet) }.
 % Arithmetic
 instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(_, Label), non_significant_lines(), add_var_instruction(_,Label2), non_significant_lines(), mov_to_var_instruction(Label3,_), { append([Indent,Label3,":=",Label,"+",Label2,";\n"], InstructionSet) }.
 instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(_, Label), non_significant_lines(), sub_var_instruction(_,Label2), non_significant_lines(), mov_to_var_instruction(Label3,_), { append([Indent,Label3,":=",Label,"-",Label2,";\n"], InstructionSet) }.
@@ -140,8 +142,8 @@ instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(Register, L
 instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(Register, Label), non_significant_lines(), dec_instruction(Register), non_significant_lines(), mov_to_var_instruction(Label,Register), { append([Indent,Label,":=",Label,"-","1;\n"], InstructionSet) }.
 %TODO more instructions
 
-function_call(FunctionName) --> call_instruction(FunctionName).
-function_call(FunctionName, Params, StackSpace) --> push_parameters(Params), non_significant_lines(), call_instruction(FunctionName), non_significant_lines(), release_stack_instruction(StackSpace).
+procedure_call(ProcedureName) --> call_instruction(ProcedureName).
+procedure_call(ProcedureName, Params, StackSpace) --> push_parameters(Params), non_significant_lines(), call_instruction(ProcedureName), non_significant_lines(), release_stack_instruction(StackSpace).
 push_parameters([Param|Params]) --> push_instruction(Param), non_significant_lines(), push_parameters(Params).
 push_parameters([Param]) --> push_instruction(Param).
 

@@ -51,7 +51,7 @@ msg2:
 constByte:
 	dd	14
 
-_pDoStuff:
+_pReadUserVariables:
 	; Read user string
 	push	str_var
 	call	_read_pascal_string
@@ -65,6 +65,38 @@ _pDoStuff:
 	; Read user double
 	call	_read_uint32
 	mov		[double_var], eax
+	; Return
+	ret
+
+_pWriteUserVariables:
+	; Write user string
+	push    str_var
+	call    _println_pascal_string
+	add     esp, 4
+	; Write user byte
+	push	dword [byte_var]
+	call	_println_uint8
+	add		esp, 4
+	; Write user double
+	push	dword [word_var]
+	call	_println_uint16
+	add		esp, 4
+	; Write user double
+	push	dword [double_var]
+	call	_println_uint32
+	add		esp, 4
+	; Return
+	ret
+
+_pDoMath:
+	; word_var -= byte_var
+	mov		eax, [word_var]
+	sub		al, [byte_var]
+	mov		[word_var], eax
+	; --byte_var
+	mov		eax, [byte_var]
+	dec		eax
+	mov		[byte_var], eax
 	; Return
 	ret
 
@@ -84,49 +116,16 @@ _main:
 	call    _print_pascal_string
 	add     esp, 4
 	
-	; Read user string
-	push	str_var
-	call	_read_pascal_string
-	add		esp, 4
-	; Read user byte
-	call	_read_uint8
-	mov		[byte_var], al
-	; Read user word
-	call	_read_uint16
-	mov		[word_var], ax
-	; Read user double
-	call	_read_uint32
-	mov		[double_var], eax
+	call	_pReadUserVariables
 	
-	; A few arithmetical stuff on user input
-	mov		eax, [word_var]
-	sub		al, [byte_var]
-	mov		[word_var], eax
-	mov		eax, [byte_var]
-	dec		eax
-	mov		[byte_var], eax
+	call	_pDoMath
 	
 	; Write second messsage to console
 	push    msg2
 	call    _print_pascal_string
 	add     esp, 4
 	
-	; Write user string
-	push    str_var
-	call    _println_pascal_string
-	add     esp, 4
-	; Write user byte
-	push	dword [byte_var]
-	call	_println_uint8
-	add		esp, 4
-	; Write user double
-	push	dword [word_var]
-	call	_println_uint16
-	add		esp, 4
-	; Write user double
-	push	dword [double_var]
-	call	_println_uint32
-	add		esp, 4
+	call _pWriteUserVariables
 	
 	; Return
 	ret
