@@ -135,11 +135,11 @@ instruction_set(Indent, InstructionSet) --> procedure_call("_println_uint32", [L
 % Call procedure
 instruction_set(Indent, InstructionSet) --> procedure_call([95,112|Name]), { append([Indent,Name,"();\n"], InstructionSet) }.
 % Arithmetic
-instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(_, Label), non_significant_lines(), add_var_instruction(_,Label2), non_significant_lines(), mov_to_var_instruction(Label3,_), { append([Indent,Label3,":=",Label,"+",Label2,";\n"], InstructionSet) }.
-instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(_, Label), non_significant_lines(), sub_var_instruction(_,Label2), non_significant_lines(), mov_to_var_instruction(Label3,_), { append([Indent,Label3,":=",Label,"-",Label2,";\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(_, Label), non_significant_lines(), add_var_instruction(_,Label2), non_significant_lines(), mov_to_var_instruction(Label3,_), { append([Indent,Label3," := ",Label," + ",Label2,";\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(_, Label), non_significant_lines(), sub_var_instruction(_,Label2), non_significant_lines(), mov_to_var_instruction(Label3,_), { append([Indent,Label3," := ",Label," - ",Label2,";\n"], InstructionSet) }.
 instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(Register, Label), non_significant_lines() inc_instruction(Register), 
-	non_significant_lines(), mov_to_var_instruction(Label,Register), { append([Indent,Label,":=",Label,"+","1;\n"], InstructionSet) }.
-instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(Register, Label), non_significant_lines(), dec_instruction(Register), non_significant_lines(), mov_to_var_instruction(Label,Register), { append([Indent,Label,":=",Label,"-","1;\n"], InstructionSet) }.
+	non_significant_lines(), mov_to_var_instruction(Label,Register), { append([Indent,Label," := ",Label," + ","1;\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(Register, Label), non_significant_lines(), dec_instruction(Register), non_significant_lines(), mov_to_var_instruction(Label,Register), { append([Indent,Label," := ",Label," - ","1;\n"], InstructionSet) }.
 %TODO more instructions
 
 procedure_call(ProcedureName) --> call_instruction(ProcedureName).
