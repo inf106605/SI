@@ -48,9 +48,20 @@ msg1:
 	db  14, 'Hello, World!', 10
 msg2:
 	db  22, 'Goodbye, Cruel World!', 10
+constByte:
+	dd	14
 
 ; Main function
 _main:
+	;mov		eax, [constByte]
+	;dec		eax
+	;mov		[byte_var], eax
+	
+	; Write const byte
+	push	dword [constByte]
+	call	_println_uint8
+	add		esp, 4
+	
 	; Write first messsage to console
 	push    msg1
 	call    _print_pascal_string

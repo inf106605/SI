@@ -68,8 +68,10 @@ constants(Constants) --> "", { Constants = "" }.
 constant_lines(ConstantLines) --> constant_line(ConstantLine), non_significant_lines(), constant_lines(RestOfConstantLines), { append(ConstantLine, RestOfConstantLines, ConstantLines) }.
 constant_lines(ConstantLines) --> constant_line(ConstantLine), { ConstantLines = ConstantLine }.
 constant_line(ConstantLine) --> label(Name), non_significant_lines(), maybe_whitespaces(), constant_data(Data), non_significant_thing(), "\n", { append(["\t", Name, " = ", Data, ";\n"], ConstantLine) }.
+constant_data(Data) --> constant_byte(Data).
+constant_data(Data) --> constant_word(Data).
+constant_data(Data) --> constant_dword(Data).
 constant_data(Data) --> constant_string(Data).
-%TODO more types
 
 %------------------------------- string constant -------------------------------
 
@@ -83,6 +85,11 @@ string_part(StringPart) --> string_char(Char), string_part(NextStringPart), { ap
 string_part(StringPart) --> "", { StringPart = "" }.
 string_char(Char) --> [C], { C \= 10, C \= 39, Char = [C] }.
 
+%-------------------------------- constant number --------------------------------
+ constant_byte(ConstantByte) --> "db", whitespaces(), number(Number), { ConstantByte = Number}.
+ constant_word(ConstantByte) --> "dw", whitespaces(), number(Number), { ConstantByte = Number}.
+ constant_dword(ConstantByte) --> "dd", whitespaces(), number(Number), { ConstantByte = Number}.
+ 
 %---------------------------------- FUNCTIONS ----------------------------------
 
 function_header(Name) --> function_label([95|Name]).
