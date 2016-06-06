@@ -106,3 +106,10 @@ void println_uint32(uint32_t i)
 	std::printf("%u\n", (int)i);
 	std::fflush(stdout);
 }
+
+extern "C"
+void println()
+{
+	std::printf("\n");
+	std::fflush(stdout);
+}

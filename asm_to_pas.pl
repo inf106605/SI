@@ -137,6 +137,7 @@ instruction_set(Indent, InstructionSet) --> procedure_call("_print_uint16", [Lab
 instruction_set(Indent, InstructionSet) --> procedure_call("_println_uint16", [LabelWithType], "4"), { append(["dword [", Label, "]"], LabelWithType), append([Indent,"Writeln(",Label,");\n"], InstructionSet) }.
 instruction_set(Indent, InstructionSet) --> procedure_call("_print_uint32", [LabelWithType], "4"), { append(["dword [", Label, "]"], LabelWithType), append([Indent,"Write(",Label,");\n"], InstructionSet) }.
 instruction_set(Indent, InstructionSet) --> procedure_call("_println_uint32", [LabelWithType], "4"), { append(["dword [", Label, "]"], LabelWithType), append([Indent,"Writeln(",Label,");\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> procedure_call("_println"), { append(Indent, "Writeln();\n", InstructionSet) }.
 % Call procedure
 instruction_set(Indent, InstructionSet) --> procedure_call([95,112|Name]), { append([Indent,Name,"();\n"], InstructionSet) }.
 % Arithmetic
