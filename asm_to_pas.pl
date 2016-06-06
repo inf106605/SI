@@ -150,6 +150,10 @@ instruction_set(Indent, InstructionSet) --> mov_instruction("ecx",StartValue), n
 	non_significant_lines(), block(Indent, Block), non_significant_lines(),
 	mov_from_var_instruction("ecx", Counter), non_significant_lines(), inc_instruction("ecx"), non_significant_lines(), cmp_instruction("ecx", EndValue), non_significant_lines(), jle_instruction(Label),
 	{ append([Indent,"for ",Counter," := ",StartValue," to ",EndValue," do\n",Block], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> mov_instruction("ecx",StartValue), non_significant_lines(), label(Label), non_significant_lines(), mov_to_var_instruction(Counter, "ecx"),
+	non_significant_lines(), block(Indent, Block), non_significant_lines(),
+	mov_from_var_instruction("ecx", Counter), non_significant_lines(), dec_instruction("ecx"), non_significant_lines(), cmp_instruction("ecx", EndValue), non_significant_lines(), jge_instruction(Label),
+	{ append([Indent,"for ",Counter," := ",StartValue," downto ",EndValue," do\n",Block], InstructionSet) }.
 
 procedure_call(ProcedureName) --> call_instruction(ProcedureName).
 procedure_call(ProcedureName, Params, StackSpace) --> push_parameters(Params), non_significant_lines(), call_instruction(ProcedureName), non_significant_lines(), release_stack_instruction(StackSpace).
@@ -173,6 +177,7 @@ dec_instruction(Param) --> instruction("dec", [Param]).
 inc_instruction(Param) --> instruction("inc", [Param]).
 cmp_instruction(Param1, Param2) --> instruction("cmp", [Param1,Param2]).
 jle_instruction(Param) --> instruction("jle", [Param]).
+jge_instruction(Param) --> instruction("jge", [Param]).
 return_instruction() --> instruction("ret", []).
 
 instruction(Instruction, Params) --> maybe_whitespaces(), name(Instruction), parameters(Params), non_significant_thing(), "\n".

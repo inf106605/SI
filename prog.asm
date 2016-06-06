@@ -42,6 +42,8 @@ double_var:
 
 i:
 	resd 1
+j:
+	resd 1
 
 ; Section with constants and program instructions
 	section .text
@@ -105,10 +107,6 @@ _pDoMath:
 
 ; Main function
 _main:
-	;mov		eax, [constByte]
-	;dec		eax
-	;mov		[byte_var], eax
-	
 	; Write const byte
 	push	dword [constByte]
 	call	_println_uint8
@@ -125,17 +123,30 @@ _main:
 	
 	; Do a loopty loop (x3)
 	mov		ecx, 1
-	.loopBegin:
+	.outerLoopBegin:
 	mov		[i], ecx
 	; Write second messsage to console
 	push    msg2
 	call    _print_pascal_string
 	add     esp, 4
-	; End of the loop
+	; Do a backward loopty loop (x2)
+	mov		ecx, 2
+	.innerLoopBegin:
+	mov		[j], ecx
+	; Write loop counter to console
+	push    dword [j]
+	call    _println_uint32
+	add     esp, 4
+	; End of the inner loop
+	mov		ecx, [j]
+	dec		ecx
+	cmp		ecx, 1
+	jge		.innerLoopBegin
+	; End of the outer loop
 	mov		ecx, [i]
 	inc		ecx
 	cmp		ecx, 3
-	jle		.loopBegin
+	jle		.outerLoopBegin
 	
 	call _pWriteUserVariables
 	
