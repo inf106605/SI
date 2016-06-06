@@ -121,6 +121,7 @@ block_body(Indent, Body) --> "", { Body = "" }.
 %--------------------------------- INSTRUCTION ---------------------------------
 
 % Blocks
+block(Indent, Block) --> instruction_set([9|Indent], Block).
 block(Indent, Block) --> block_body(Indent, Body), { append([Indent,"begin\n",Body,Indent,"end;\n"], Block) }.
 
 % Read
