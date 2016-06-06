@@ -154,13 +154,13 @@ instruction_set(Indent, InstructionSet) --> xor_instruction("edx","edx"), mov_fr
 instruction_set(Indent, InstructionSet) --> xor_instruction("edx","edx"), mov_from_var_instruction("eax", Label1), non_significant_lines(), mov_from_var_instruction(Register,Label2), non_significant_lines(), mod_instruction(Register), non_significant_lines(), mov_to_var_instruction(Label3,"edx"), { append([Indent,Label3," := ",Label1," mod ",Label2,";\n"], InstructionSet) }.
 instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(Register, Label), non_significant_lines(), xor_var_instruction(Register,Label2), non_significant_lines(), mov_to_var_instruction(Label3,Register), { append([Indent,Label3," := ",Label," xor ",Label2,";\n"], InstructionSet) }.
 % Loops
-instruction_set(Indent, InstructionSet) --> mov_instruction("ecx",StartValue), non_significant_lines(), label(Label), non_significant_lines(), mov_to_var_instruction(Counter, "ecx"),
+instruction_set(Indent, InstructionSet) --> mov_any_instruction("ecx",StartValue), non_significant_lines(), label(Label), non_significant_lines(), mov_to_var_instruction(Counter, "ecx"),
 	non_significant_lines(), block(Indent, Block), non_significant_lines(),
-	mov_from_var_instruction("ecx", Counter), non_significant_lines(), inc_instruction("ecx"), non_significant_lines(), cmp_instruction("ecx", EndValue), non_significant_lines(), jle_instruction(Label),
+	mov_from_var_instruction("ecx", Counter), non_significant_lines(), inc_instruction("ecx"), non_significant_lines(), cmp_any_instruction("ecx", EndValue), non_significant_lines(), jle_instruction(Label),
 	{ append([Indent,"for ",Counter," := ",StartValue," to ",EndValue," do\n",Block], InstructionSet) }.
-instruction_set(Indent, InstructionSet) --> mov_instruction("ecx",StartValue), non_significant_lines(), label(Label), non_significant_lines(), mov_to_var_instruction(Counter, "ecx"),
+instruction_set(Indent, InstructionSet) --> mov_any_instruction("ecx",StartValue), non_significant_lines(), label(Label), non_significant_lines(), mov_to_var_instruction(Counter, "ecx"),
 	non_significant_lines(), block(Indent, Block), non_significant_lines(),
-	mov_from_var_instruction("ecx", Counter), non_significant_lines(), dec_instruction("ecx"), non_significant_lines(), cmp_instruction("ecx", EndValue), non_significant_lines(), jge_instruction(Label),
+	mov_from_var_instruction("ecx", Counter), non_significant_lines(), dec_instruction("ecx"), non_significant_lines(), cmp_any_instruction("ecx", EndValue), non_significant_lines(), jge_instruction(Label),
 	{ append([Indent,"for ",Counter," := ",StartValue," downto ",EndValue," do\n",Block], InstructionSet) }.
 % Conditions
 instruction_set(Indent, InstructionSet) --> condition(Condition, EndLabel), non_significant_lines(), block(Indent, TrueBlock), non_significant_lines(), label(EndLabel),
@@ -175,17 +175,18 @@ push_parameters([Param|Params]) --> push_instruction(Param), non_significant_lin
 push_parameters([Param]) --> push_instruction(Param).
 
 %Condition
-condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_significant_lines(), cmp_instruction(Register,Label2), non_significant_lines(), jge_instruction(Addr), non_significant_lines(), {append([Label," < ", Label2],Condition)}.
-condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_significant_lines(), cmp_instruction(Register,Label2), non_significant_lines(), jle_instruction(Addr), non_significant_lines(), {append([Label," > ", Label2],Condition)}.
-condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_significant_lines(), cmp_instruction(Register,Label2), non_significant_lines(), jg_instruction(Addr), non_significant_lines(), {append([Label," <= ", Label2],Condition)}.
-condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_significant_lines(), cmp_instruction(Register,Label2), non_significant_lines(), jl_instruction(Addr), non_significant_lines(), {append([Label," >= ", Label2],Condition)}.
-condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_significant_lines(), cmp_instruction(Register,Label2), non_significant_lines(), je_instruction(Addr), non_significant_lines(), {append([Label," <> ", Label2],Condition)}.
-condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_significant_lines(), cmp_instruction(Register,Label2), non_significant_lines(), jne_instruction(Addr), non_significant_lines(), {append([Label," = ", Label2],Condition)}.
-condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_significant_lines(), test_instruction(Register,Label2), non_significant_lines(), je_instruction(Addr), non_significant_lines(), {append([Label," <> ", Label2],Condition)}.
-condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_significant_lines(), test_instruction(Register,Label2), non_significant_lines(), jne_instruction(Addr), non_significant_lines(), {append([Label," = ", Label2],Condition)}.
+condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_significant_lines(), cmp_any_instruction(Register,Label2), non_significant_lines(), jge_instruction(Addr), non_significant_lines(), {append([Label," < ", Label2],Condition)}.
+condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_significant_lines(), cmp_any_instruction(Register,Label2), non_significant_lines(), jle_instruction(Addr), non_significant_lines(), {append([Label," > ", Label2],Condition)}.
+condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_significant_lines(), cmp_any_instruction(Register,Label2), non_significant_lines(), jg_instruction(Addr), non_significant_lines(), {append([Label," <= ", Label2],Condition)}.
+condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_significant_lines(), cmp_any_instruction(Register,Label2), non_significant_lines(), jl_instruction(Addr), non_significant_lines(), {append([Label," >= ", Label2],Condition)}.
+condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_significant_lines(), cmp_any_instruction(Register,Label2), non_significant_lines(), je_instruction(Addr), non_significant_lines(), {append([Label," <> ", Label2],Condition)}.
+condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_significant_lines(), cmp_any_instruction(Register,Label2), non_significant_lines(), jne_instruction(Addr), non_significant_lines(), {append([Label," = ", Label2],Condition)}.
+condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_significant_lines(), test_any_instruction(Register,Label2), non_significant_lines(), je_instruction(Addr), non_significant_lines(), {append([Label," <> ", Label2],Condition)}.
+condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_significant_lines(), test_any_instruction(Register,Label2), non_significant_lines(), jne_instruction(Addr), non_significant_lines(), {append([Label," = ", Label2],Condition)}.
 
 %--------------------------- assembler instructions ----------------------------
 
+mov_any_instruction(Param1, Param2) --> mov_from_var_instruction(Param1, Param2) | mov_to_var_instruction(Param1, Param2) | mov_instruction(Param1, Param2).
 mov_from_var_instruction(Param1, Param2) --> mov_instruction(Param1, Var), { append(["[",Param2,"]"], Var) }.
 mov_to_var_instruction(Param1, Param2) --> mov_instruction(Var, Param2), { append(["[",Param1,"]"], Var) }.
 mov_instruction(Param1, Param2) --> instruction("mov", [Param1,Param2]).
@@ -205,7 +206,11 @@ inc_instruction(Param) --> instruction("inc", [Param]).
 xor_var_instruction(Param1, Param2) --> xor_instruction(Param1, Var), { append(["[",Param2,"]"], Var) }.
 xor_instruction(Param1, Param2) --> instruction("xor", [Param1,Param2]).
 jmp_instruction(Param) --> instruction("jmp", [Param]).
+cmp_any_instruction(Param1, Param2) --> cmp_var_instruction(Param1, Param2) | cmp_instruction(Param1, Param2).
+cmp_var_instruction(Param1, Param2) --> cmp_instruction(Param1, Var), { append(["[",Param2,"]"], Var) }.
 cmp_instruction(Param1, Param2) --> instruction("cmp", [Param1,Param2]).
+test_any_instruction(Param1, Param2) --> test_var_instruction(Param1, Param2) | cmp_instruction(Param1, Param2).
+test_var_instruction(Param1, Param2) --> test_instruction(Param1, Var), { append(["[",Param2,"]"], Var) }.
 test_instruction(Param1, Param2) --> instruction("test", [Param1,Param2]).
 je_instruction(Param) --> instruction("je", [Param]).
 jne_instruction(Param) --> instruction("jne", [Param]).

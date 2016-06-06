@@ -306,6 +306,17 @@ _pDoConditions:
 	; Return
 	ret
 	
+_pDoFor:
+	mov		ecx, [double_var]
+	.outerLoopBegin:
+	mov		[i], ecx
+	mov		ecx, [i]
+	inc		ecx
+	cmp		ecx, [double_var]
+	jle		.outerLoopBegin
+	; Return
+	ret
+	
 ; Main function
 _main:
 	call 	_pWriteConstByte
@@ -315,6 +326,7 @@ _main:
 	call	_pRunLoops
 	call	_pWriteUserVariables
 	call	_pDoConditions
+	call	_pDoFor
 	
 	; Return
 	ret
