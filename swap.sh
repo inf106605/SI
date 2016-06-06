@@ -1,6 +1,6 @@
 #!/bin/sh
 
-max_val=4
+max_val=5
 
 if [ \( -e ./prog$(expr $max_val + 1).asm \) -o \( -e ./input$(expr $max_val + 1).txt \) ] ; then
 	echo ERROR!
