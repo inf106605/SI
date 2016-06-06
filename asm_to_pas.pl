@@ -165,9 +165,9 @@ push_instruction(Param) --> instruction("push", [Param]).
 pop_instruction(Param) --> instruction("pop", [Param]).
 call_instruction(Param) --> instruction("call", [Param]).
 release_stack_instruction(Param) --> add_instruction("esp", Param).
-add_var_instruction(Param1, Param2) --> instruction("add", [Param1,Var]), { append(["[",Param2,"]"], Var) }.
+add_var_instruction(Param1, Param2) --> add_instruction(Param1, Var), { append(["[",Param2,"]"], Var) }.
 add_instruction(Param1, Param2) --> instruction("add", [Param1,Param2]).
-sub_var_instruction(Param1, Param2) --> instruction("sub", [Param1,Var]), { append(["[",Param2,"]"], Var) }.
+sub_var_instruction(Param1, Param2) --> sub_instruction(Param1, Var), { append(["[",Param2,"]"], Var) }.
 sub_instruction(Param1, Param2) --> instruction("sub", [Param1,Param2]).
 dec_instruction(Param) --> instruction("dec", [Param]).
 inc_instruction(Param) --> instruction("inc", [Param]).
