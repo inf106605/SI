@@ -5,13 +5,13 @@
 ; then exits.  It needs to be linked with a C library.
 ; ----------------------------------------------------------------------------
 
-    global  _main
+	global  _main
 	extern  _print_pascal_string
 	extern  _println_pascal_string
 	extern  _print_int8
 	extern  _println_int8
-    extern  _print_uint8
-    extern  _println_uint8
+	extern  _print_uint8
+	extern  _println_uint8
 	extern  _print_int16
 	extern  _println_int16
 	extern  _print_uint16
@@ -22,7 +22,7 @@
 	extern  _println_uint32
 	extern  _read_pascal_string
 	extern  _read_int8
-    extern  _read_uint8
+	extern  _read_uint8
 	extern  _read_int16
 	extern  _read_uint16
 	extern  _read_int32
