@@ -49,12 +49,48 @@ j:
 	section .text
 
 ; Constants
-msg1:
+helloWorldMsg:
 	db  14, 'Hello, World!', 10
-msg2:
+goodbyeWordlMsg:
 	db  22, 'Goodbye, Cruel World!', 10
 constByte:
 	dd	14
+
+_pWriteHelloWorld:
+	push    helloWorldMsg
+	call    _print_pascal_string
+	add     esp, 4
+	ret
+
+_pRunLoops:
+	; Do a loopty loop (x3)
+	mov		ecx, 1
+	.outerLoopBegin:
+	mov		[i], ecx
+	; Write second messsage to console
+	push    goodbyeWordlMsg
+	call    _print_pascal_string
+	add     esp, 4
+	; Do a backward loopty loop (x2)
+	mov		ecx, 2
+	.innerLoopBegin:
+	mov		[j], ecx
+	; Write loop counter to console
+	push    dword [j]
+	call    _println_uint32
+	add     esp, 4
+	; End of the inner loop
+	mov		ecx, [j]
+	dec		ecx
+	cmp		ecx, 1
+	jge		.innerLoopBegin
+	; End of the outer loop
+	mov		ecx, [i]
+	inc		ecx
+	cmp		ecx, 3
+	jle		.outerLoopBegin
+	; Return
+	ret
 
 _pReadUserVariables:
 	; Read user string
@@ -112,43 +148,11 @@ _main:
 	call	_println_uint8
 	add		esp, 4
 	
-	; Write first messsage to console
-	push    msg1
-	call    _print_pascal_string
-	add     esp, 4
-	
+	call	_pWriteHelloWorld
 	call	_pReadUserVariables
-	
 	call	_pDoMath
-	
-	; Do a loopty loop (x3)
-	mov		ecx, 1
-	.outerLoopBegin:
-	mov		[i], ecx
-	; Write second messsage to console
-	push    msg2
-	call    _print_pascal_string
-	add     esp, 4
-	; Do a backward loopty loop (x2)
-	mov		ecx, 2
-	.innerLoopBegin:
-	mov		[j], ecx
-	; Write loop counter to console
-	push    dword [j]
-	call    _println_uint32
-	add     esp, 4
-	; End of the inner loop
-	mov		ecx, [j]
-	dec		ecx
-	cmp		ecx, 1
-	jge		.innerLoopBegin
-	; End of the outer loop
-	mov		ecx, [i]
-	inc		ecx
-	cmp		ecx, 3
-	jle		.outerLoopBegin
-	
-	call _pWriteUserVariables
+	call	_pRunLoops
+	call	_pWriteUserVariables
 	
 	; Return
 	ret
