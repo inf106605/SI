@@ -2,3 +2,4 @@
 *.exe
 /*.pas
 /output_*.txt
+/asm_to_pas.pl~

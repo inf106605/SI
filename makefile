@@ -28,4 +28,4 @@ prog_pas.exe: prog.pas
 
 .PHONY: clean
 clean:
-	rm -f ./*.o ./*.obj ./*.exe ./prog.pas ./prog_new.pas ./output_*.txt
+	rm -f ./*.o ./*.obj ./*.exe ./prog.pas ./prog_new.pas ./output_*.txt ./asm_to_pas.pl~

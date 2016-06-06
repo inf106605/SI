@@ -6,6 +6,11 @@ main() :-
 	writef("%s", [Pas]),
 	halt.
 
+main_file(File) :-
+	open(File, read, Stream),
+	read_stream_to_codes(Stream, Asm),
+	program(Pas, Asm, []),
+	writef("%s", [Pas]).
 
 %-------------------------------------------------------------------------------
 %--------------------------------- DCG  PARSER ---------------------------------
