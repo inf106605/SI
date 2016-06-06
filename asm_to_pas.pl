@@ -141,6 +141,9 @@ instruction_set(Indent, InstructionSet) --> procedure_call("_println_uint32", [L
 instruction_set(Indent, InstructionSet) --> procedure_call("_println"), { append(Indent, "Writeln();\n", InstructionSet) }.
 % Call procedure
 instruction_set(Indent, InstructionSet) --> procedure_call([95,112|Name]), { append([Indent,Name,"();\n"], InstructionSet) }.
+% Moves
+instruction_set(Indent, InstructionSet) --> mov_instruction(LabelWithStuff, Value), { append(["dword [",Label,"]"], LabelWithStuff), append([Indent,Label," := ",Value,";\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(Register, Label1), mov_to_var_instruction(Label2, Register), { append([Indent,Label2," := ",Label1,";\n"], InstructionSet) }.
 % Arithmetic
 instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(_, Label), non_significant_lines(), add_var_instruction(_,Label2), non_significant_lines(), mov_to_var_instruction(Label3,_), { append([Indent,Label3," := ",Label," + ",Label2,";\n"], InstructionSet) }.
 instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(_, Label), non_significant_lines(), sub_var_instruction(_,Label2), non_significant_lines(), mov_to_var_instruction(Label3,_), { append([Indent,Label3," := ",Label," - ",Label2,";\n"], InstructionSet) }.
