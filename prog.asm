@@ -53,6 +53,12 @@ helloWorldMsg:
 	db  30, 'Writting string: Hello, World!'
 goodbyeWordlMsg:
 	db  31, 'Writting: Goodbye, Cruel World!'
+secondValLessMsg:
+	db	29, 'Second value is less than 32.'
+thirdValLessMsg:
+	db	28, 'Third value is less than 32.'
+thirdValNotLessMsg:
+	db	32, 'Third value is not less than 32.'
 msgWriteConstByte:
 	db  33, 'Writting value from constant byte'
 msgReadString:
@@ -274,6 +280,31 @@ _pWriteConstByte:
 	add		esp, 4	
 	; Return
 	ret
+
+_pDoConditions:
+	; Check if second user value is less than 32
+	mov		al, [byte_var]
+	cmp		al, 32
+	jge		.endFirstIf
+	push    secondValLessMsg
+	call    _println_pascal_string
+	add     esp, 4
+	.endFirstIf:
+	; Check if third user value is less than 32
+	mov		ax, [word_var]
+	cmp		ax, 32
+	jge		.elseSecondIf
+	push    thirdValLessMsg
+	call    _println_pascal_string
+	add     esp, 4
+	jmp		.endSecondIf
+	.elseSecondIf:
+	push    thirdValNotLessMsg
+	call    _println_pascal_string
+	add     esp, 4
+	.endSecondIf:
+	; Return
+	ret
 	
 ; Main function
 _main:
@@ -283,6 +314,7 @@ _main:
 	call	_pDoMath
 	call	_pRunLoops
 	call	_pWriteUserVariables
+	call	_pDoConditions
 	
 	; Return
 	ret
