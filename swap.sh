@@ -5,6 +5,8 @@ if [ \( -e ./prog3.asm \) -o \( -e ./input3.txt \) ] ; then
 	exit 1
 fi
 
+make clean
+
 mv ./prog.asm ./prog3.asm
 mv ./prog2.asm ./prog.asm
 mv ./prog3.asm ./prog2.asm
