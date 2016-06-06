@@ -146,6 +146,8 @@ instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(_, Label), 
 instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(Register, Label), non_significant_lines() inc_instruction(Register), 
 	non_significant_lines(), mov_to_var_instruction(Label,Register), { append([Indent,Label," := ",Label," + ","1;\n"], InstructionSet) }.
 instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(Register, Label), non_significant_lines(), dec_instruction(Register), non_significant_lines(), mov_to_var_instruction(Label,Register), { append([Indent,Label," := ",Label," - ","1;\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(Register, Label), non_significant_lines(), mul_instruction(Register), non_significant_lines(), mov_to_var_instruction(Label,Register), { append([Indent,Label," := ",Label," * ",Register,";\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(Register, Label), non_significant_lines(), div_instruction(Register), non_significant_lines(), mov_to_var_instruction(Label,Register), { append([Indent,Label," := ",Label," / ",Register,";\n"], InstructionSet) }.
 % Loops
 instruction_set(Indent, InstructionSet) --> mov_instruction("ecx",StartValue), non_significant_lines(), label(Label), non_significant_lines(), mov_to_var_instruction(Counter, "ecx"),
 	non_significant_lines(), block(Indent, Block), non_significant_lines(),
@@ -174,12 +176,15 @@ add_var_instruction(Param1, Param2) --> add_instruction(Param1, Var), { append([
 add_instruction(Param1, Param2) --> instruction("add", [Param1,Param2]).
 sub_var_instruction(Param1, Param2) --> sub_instruction(Param1, Var), { append(["[",Param2,"]"], Var) }.
 sub_instruction(Param1, Param2) --> instruction("sub", [Param1,Param2]).
+mul_instruction(Param) --> instruction("mul", [Param]).
+div_instruction(Param) --> instruction("div", [Param]).
 dec_instruction(Param) --> instruction("dec", [Param]).
 inc_instruction(Param) --> instruction("inc", [Param]).
 cmp_instruction(Param1, Param2) --> instruction("cmp", [Param1,Param2]).
 jle_instruction(Param) --> instruction("jle", [Param]).
 jge_instruction(Param) --> instruction("jge", [Param]).
 return_instruction() --> instruction("ret", []).
+
 
 instruction(Instruction, Params) --> maybe_whitespaces(), name(Instruction), parameters(Params), non_significant_thing(), "\n".
 parameters([]) --> "".
