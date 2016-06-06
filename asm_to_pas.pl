@@ -169,7 +169,6 @@ push_parameters([Param|Params]) --> push_instruction(Param), non_significant_lin
 push_parameters([Param]) --> push_instruction(Param).
 
 %Condition
-instruction_set(Indent, InstructionSet) --> condition(Condition, EndLabel),
 condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_significant_lines(), cmp_instruction(Register,Label2), non_significant_lines(), jge_instruction(Addr), non_significant_lines(), {append([Indent,Label," < ", Label2],Condition)}.
 condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_significant_lines(), cmp_instruction(Register,Label2), non_significant_lines(), jle_instruction(Addr), non_significant_lines(), {append([Indent,Label," > ", Label2],Condition)}.
 condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_significant_lines(), cmp_instruction(Register,Label2), non_significant_lines(), jg_instruction(Addr), non_significant_lines(), {append([Indent,Label," <= ", Label2],Condition)}.
@@ -178,6 +177,7 @@ condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_sig
 condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_significant_lines(), cmp_instruction(Register,Label2), non_significant_lines(), jne_instruction(Addr), non_significant_lines(), {append([Indent,Label," = ", Label2],Condition)}.
 condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_significant_lines(), test_instruction(Register,Label2), non_significant_lines(), je_instruction(Addr), non_significant_lines(), {append([Indent,Label," <> ", Label2],Condition)}.
 condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_significant_lines(), test_instruction(Register,Label2), non_significant_lines(), jne_instruction(Addr), non_significant_lines(), {append([Indent,Label," = ", Label2],Condition)}.
+
 %--------------------------- assembler instructions ----------------------------
 
 mov_from_var_instruction(Param1, Param2) --> mov_instruction(Param1, Var), { append(["[",Param2,"]"], Var) }.
@@ -196,8 +196,9 @@ div_instruction(Param) --> instruction("div", [Param]).
 mod_instruction(Param) --> instruction("mod", [Param]).
 dec_instruction(Param) --> instruction("dec", [Param]).
 inc_instruction(Param) --> instruction("inc", [Param]).
-xor_instruction(Param) --> instruction("xor", [Param1,Param2]).
 xor_var_instruction(Param1, Param2) --> xor_instruction(Param1, Var), { append(["[",Param2,"]"], Var) }.
+xor_instruction(Param1, Param2) --> instruction("xor", [Param1,Param2]).
+jmp_instruction(Param) --> instruction("jmp", [Param]).
 cmp_instruction(Param1, Param2) --> instruction("cmp", [Param1,Param2]).
 test_instruction(Param1, Param2) --> instruction("test", [Param1,Param2]).
 je_instruction(Param) --> instruction("je", [Param]).
