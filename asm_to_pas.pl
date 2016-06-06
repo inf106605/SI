@@ -168,10 +168,10 @@ push_parameters([Param]) --> push_instruction(Param).
 
 %Condition
 instruction_set(Indent, InstructionSet) --> condition(Condition, EndLabel),
-condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_significant_lines(), cmp_instruction(Register,Label2), non_significant_lines(), jge_instruction(Addr), non_significant_lines(), {append([Indent,Label," <= ", Label2],Condition)}.
-condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_significant_lines(), cmp_instruction(Register,Label2), non_significant_lines(), jle_instruction(Addr), non_significant_lines(), {append([Indent,Label," >= ", Label2],Condition)}.
-condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_significant_lines(), cmp_instruction(Register,Label2), non_significant_lines(), jg_instruction(Addr), non_significant_lines(), {append([Indent,Label," < ", Label2],Condition)}.
-condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_significant_lines(), cmp_instruction(Register,Label2), non_significant_lines(), jl_instruction(Addr), non_significant_lines(), {append([Indent,Label," > ", Label2],Condition)}.
+condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_significant_lines(), cmp_instruction(Register,Label2), non_significant_lines(), jge_instruction(Addr), non_significant_lines(), {append([Indent,Label," < ", Label2],Condition)}.
+condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_significant_lines(), cmp_instruction(Register,Label2), non_significant_lines(), jle_instruction(Addr), non_significant_lines(), {append([Indent,Label," > ", Label2],Condition)}.
+condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_significant_lines(), cmp_instruction(Register,Label2), non_significant_lines(), jg_instruction(Addr), non_significant_lines(), {append([Indent,Label," <= ", Label2],Condition)}.
+condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_significant_lines(), cmp_instruction(Register,Label2), non_significant_lines(), jl_instruction(Addr), non_significant_lines(), {append([Indent,Label," >= ", Label2],Condition)}.
 condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_significant_lines(), cmp_instruction(Register,Label2), non_significant_lines(), je_instruction(Addr), non_significant_lines(), {append([Indent,Label," <> ", Label2],Condition)}.
 condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_significant_lines(), cmp_instruction(Register,Label2), non_significant_lines(), jne_instruction(Addr), non_significant_lines(), {append([Indent,Label," = ", Label2],Condition)}.
 condition(Condition, Addr) --> mov_from_var_instruction(Register,Label), non_significant_lines(), test_instruction(Register,Label2), non_significant_lines(), je_instruction(Addr), non_significant_lines(), {append([Indent,Label," <> ", Label2],Condition)}.
