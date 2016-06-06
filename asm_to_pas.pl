@@ -146,8 +146,10 @@ instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(_, Label), 
 instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(Register, Label), non_significant_lines() inc_instruction(Register), 
 	non_significant_lines(), mov_to_var_instruction(Label,Register), { append([Indent,Label," := ",Label," + ","1;\n"], InstructionSet) }.
 instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(Register, Label), non_significant_lines(), dec_instruction(Register), non_significant_lines(), mov_to_var_instruction(Label,Register), { append([Indent,Label," := ",Label," - ","1;\n"], InstructionSet) }.
-instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(Register, Label), non_significant_lines(), mul_instruction(Register), non_significant_lines(), mov_to_var_instruction(Label,Register), { append([Indent,Label," := ",Label," * ",Register,";\n"], InstructionSet) }.
-instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(Register, Label), non_significant_lines(), div_instruction(Register), non_significant_lines(), mov_to_var_instruction(Label,Register), { append([Indent,Label," := ",Label," / ",Register,";\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> mov_from_var_instruction("eax", Label1), non_significant_lines(), mov_from_var_instruction(Register,Label2), non_significant_lines(), mul_instruction(Register), non_significant_lines(), mov_to_var_instruction(Label3,"eax") { append([Indent,Label3," := ",Label1," * ",Label2,";\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> xor_instruction("edx","edx"), mov_from_var_instruction("eax", Label1), non_significant_lines(), mov_from_var_instruction(Register,Label2), non_significant_lines(), div_instruction(Register), non_significant_lines(), mov_to_var_instruction(Label3,"eax") { append([Indent,Label3," := ",Label1," div ",Label2,";\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> xor_instruction("edx","edx"), mov_from_var_instruction("eax", Label1), non_significant_lines(), mov_from_var_instruction(Register,Label2), non_significant_lines(), mod_instruction(Register), non_significant_lines(), mov_to_var_instruction(Label3,"edx") { append([Indent,Label3," := ",Label1," mod ",Label2,";\n"], InstructionSet) }.
+instruction_set(Indent, InstructionSet) --> mov_from_var_instruction(Register, Label), non_significant_lines(), xor_var_instruction(Register,Label2), non_significant_lines(), mov_to_var_instruction(Label3,Register), { append([Indent,Label3," := ",Label," xor ",Label2,";\n"], InstructionSet) }.
 % Loops
 instruction_set(Indent, InstructionSet) --> mov_instruction("ecx",StartValue), non_significant_lines(), label(Label), non_significant_lines(), mov_to_var_instruction(Counter, "ecx"),
 	non_significant_lines(), block(Indent, Block), non_significant_lines(),
@@ -178,8 +180,11 @@ sub_var_instruction(Param1, Param2) --> sub_instruction(Param1, Var), { append([
 sub_instruction(Param1, Param2) --> instruction("sub", [Param1,Param2]).
 mul_instruction(Param) --> instruction("mul", [Param]).
 div_instruction(Param) --> instruction("div", [Param]).
+mod_instruction(Param) --> instruction("mod", [Param]).
 dec_instruction(Param) --> instruction("dec", [Param]).
 inc_instruction(Param) --> instruction("inc", [Param]).
+xor_instruction(Param) --> instruction("xor", [Param1,Param2]).
+xor_var_instruction(Param1, Param2) --> xor_instruction(Param1, Var), { append(["[",Param2,"]"], Var) }.
 cmp_instruction(Param1, Param2) --> instruction("cmp", [Param1,Param2]).
 jle_instruction(Param) --> instruction("jle", [Param]).
 jge_instruction(Param) --> instruction("jge", [Param]).
