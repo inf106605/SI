@@ -50,9 +50,39 @@ j:
 
 ; Constants
 helloWorldMsg:
-	db  14, 'Hello, World!', 10
+	db  31, 'Writting string: Hello, World!', 10
 goodbyeWordlMsg:
-	db  22, 'Goodbye, Cruel World!', 10
+	db  32, 'Writting: Goodbye, Cruel World!', 10
+msgWriteConstByte:
+	db  34, 'Writting value from constant byte', 10
+msgReadString:
+	db  12, 'Read string', 10
+msgReadByte:
+	db  10, 'Read byte', 10
+msgReadWord:
+	db  10, 'Read word', 10
+msgReadDouble:
+	db  12, 'Read double', 10
+msgWriteString:
+	db  14, 'Write string:', 10
+msgWriteByte:
+	db  12, 'Write byte:', 10
+msgWriteWord:
+	db  12, 'Write word:', 10
+msgWriteDouble:
+	db  14, 'Write double:', 10	
+msgWriteSub0:
+	db  16, 'Sub: word-byte:', 10
+msgWriteSub:
+	db  15, 'Sub: val word:', 10
+msgWriteDec:
+	db  15, 'Dec: val byte:', 10
+msgLoop1:
+	db  7, '3xLoop', 10
+msgLoop2:
+	db  7, '2xLoop', 10
+msgLoop3:
+	db  13, 'End of loops', 10
 constByte:
 	dd	14
 
@@ -63,12 +93,22 @@ _pWriteHelloWorld:
 	ret
 
 _pRunLoops:
+	;Write messages to screen
+	push    msgLoop1
+	call    _print_pascal_string
+	add     esp, 4
+	
 	; Do a loopty loop (x3)
 	mov		ecx, 1
 	.outerLoopBegin:
 	mov		[i], ecx
 	; Write second messsage to console
 	push    goodbyeWordlMsg
+	call    _print_pascal_string
+	add     esp, 4
+	
+	;Write messages to screen
+	push    msgLoop2
 	call    _print_pascal_string
 	add     esp, 4
 	; Do a backward loopty loop (x2)
@@ -89,20 +129,44 @@ _pRunLoops:
 	inc		ecx
 	cmp		ecx, 3
 	jle		.outerLoopBegin
+	
+	;Write messages to screen
+	push    msgLoop3
+	call    _print_pascal_string
+	add     esp, 4
 	; Return
 	ret
 
 _pReadUserVariables:
+	;Write messages to screen
+	push    msgReadString
+	call    _print_pascal_string
+	add     esp, 4
 	; Read user string
 	push	str_var
 	call	_read_pascal_string
 	add		esp, 4
+	
+	;Write messages to screen
+	push    msgReadByte
+	call    _print_pascal_string
+	add     esp, 4
 	; Read user byte
 	call	_read_uint8
 	mov		[byte_var], al
+	
+	;Write messages to screen
+	push    msgReadWord
+	call    _print_pascal_string
+	add     esp, 4
 	; Read user word
 	call	_read_uint16
 	mov		[word_var], ax
+	
+	;Write messages to screen
+	push    msgReadDouble
+	call    _print_pascal_string
+	add     esp, 4
 	; Read user double
 	call	_read_uint32
 	mov		[double_var], eax
@@ -110,18 +174,37 @@ _pReadUserVariables:
 	ret
 
 _pWriteUserVariables:
+    ;Write messages to screen
+	push    msgWriteString
+	call    _print_pascal_string
+	add     esp, 4
 	; Write user string
 	push    str_var
 	call    _println_pascal_string
+	add     esp, 4
+	
+	;Write messages to screen
+	push    msgWriteByte
+	call    _print_pascal_string
 	add     esp, 4
 	; Write user byte
 	push	dword [byte_var]
 	call	_println_uint8
 	add		esp, 4
+	
+	;Write messages to screen
+	push    msgWriteWord
+	call    _print_pascal_string
+	add     esp, 4
 	; Write user double
 	push	dword [word_var]
 	call	_println_uint16
 	add		esp, 4
+	
+	;Write messages to screen
+	push    msgWriteDouble
+	call    _print_pascal_string
+	add     esp, 4
 	; Write user double
 	push	dword [double_var]
 	call	_println_uint32
@@ -130,24 +213,71 @@ _pWriteUserVariables:
 	ret
 
 _pDoMath:
+	;;;SUB
+	;Write messages to screen
+	push    msgWriteSub0
+	call    _print_pascal_string
+	add     esp, 4
+	push    msgWriteSub
+	call    _print_pascal_string
+	add     esp, 4
+	push    dword [word_var]
+	call    _println_uint16
+	add     esp, 4
+	
 	; word_var -= byte_var
 	mov		eax, [word_var]
 	sub		al, [byte_var]
 	mov		[word_var], eax
+	
+	;Write messages to screen
+	push    msgWriteSub
+	call    _print_pascal_string
+	add     esp, 4
+	push    dword [word_var]
+	call    _println_uint16
+	add     esp, 4
+	
+	;;;DEC
+	;Write messages to screen
+	push    msgWriteDec
+	call    _print_pascal_string
+	add     esp, 4
+	push    dword [byte_var]
+	call    _println_uint8
+	add     esp, 4
+	
 	; --byte_var
 	mov		eax, [byte_var]
 	dec		eax
 	mov		[byte_var], eax
+	
+	;Write messages to screen
+	push    msgWriteDec
+	call    _print_pascal_string
+	add     esp, 4
+	push    dword [byte_var]
+	call    _println_uint8
+	add     esp, 4
 	; Return
 	ret
 
-; Main function
-_main:
+_pWriteConstByte:
+	;Write messages to screen
+	push    msgWriteConstByte
+	call    _print_pascal_string
+	add     esp, 4
+	
 	; Write const byte
 	push	dword [constByte]
 	call	_println_uint8
-	add		esp, 4
+	add		esp, 4	
+	; Return
+	ret
 	
+; Main function
+_main:
+	call 	_pWriteConstByte
 	call	_pWriteHelloWorld
 	call	_pReadUserVariables
 	call	_pDoMath
