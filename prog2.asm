@@ -20,7 +20,6 @@
 	extern  _println_int32
 	extern  _print_uint32
 	extern  _println_uint32
-	extern  _println
 	extern  _read_pascal_string
 	extern  _read_int8
 	extern  _read_uint8
@@ -32,141 +31,302 @@
 ; Section with 0-initialized variables
 	section .bss
 	
-user_name:
+str_var:
 	resb 256
-born_year:
-	resd 1
-age:
+byte_var:
+	resb 1
+word_var:
+	resw 1
+double_var:
 	resd 1
 
 i:
+	resd 1
+j:
 	resd 1
 
 ; Section with constants and program instructions
 	section .text
 
 ; Constants
-whatIsYourNameMsg:
-	db  18, 'What is your name?'
-helloMsg:
-	db  6, 'Hello '
-exclamationMsg:
-	db  1, '!'
+helloWorldMsg:
+	db  30, 'Writting string: Hello, World!'
+goodbyeWordlMsg:
+	db  31, 'Writting: Goodbye, Cruel World!'
+secondValLessMsg:
+	db	29, 'Second value is less than 32.'
+thirdValLessMsg:
+	db	28, 'Third value is less than 32.'
+thirdValNotLessMsg:
+	db	32, 'Third value is not less than 32.'
+msgWriteConstByte:
+	db  33, 'Writting value from constant byte'
+msgReadString:
+	db  11, 'Read string'
+msgReadByte:
+	db  9, 'Read byte'
+msgReadWord:
+	db  9, 'Read word'
+msgReadDouble:
+	db  11, 'Read double'
+msgWriteString:
+	db  13, 'Write string:'
+msgWriteByte:
+	db  11, 'Write byte:'
+msgWriteWord:
+	db  11, 'Write word:'
+msgWriteDouble:
+	db  13, 'Write double:'
+msgWriteSub0:
+	db  15, 'Sub: word-byte:'
+msgWriteSub:
+	db  14, 'Sub: val word:'
+msgWriteDec:
+	db  14, 'Dec: val byte:'
+msgLoop1:
+	db  6, '3xLoop'
+msgLoop2:
+	db  6, '2xLoop'
+msgLoop3:
+	db  12, 'End of loops'
+constByte:
+	dd	14
 
-letCountMsg:
-	db  21, 'Let', 39, 's count a little!'
-whatYearMsg:
-	db	27, 'What year were you born in?'
-wowMsg:
-	db	14, 'WOW, you have '
-yearsMsg:
-	db	7, ' years!'
-bigBoyMsg:
-	db	31, 'You are such a big, smart boy, '
-
-letCountMoreMsg:
-	db  26, 'Let', 39, 's count a little more!'
-tenAndFingers:
-	db	60, 'Yeah, ten! That', 39, 's as much as you have fingers on both hands.'
-
-currentYear:
-	dd	2016
-
-_pGetUserName:
-	; Ask about name
-	push	whatIsYourNameMsg
-	call	_println_pascal_string
-	add		esp, 4
-	; Get name
-	push	user_name
-	call	_read_pascal_string
-	add		esp, 4
-	; Say hello
-	push	helloMsg
-	call	_print_pascal_string
-	add		esp, 4
-	push	user_name
-	call	_print_pascal_string
-	add		esp, 4
-	push	exclamationMsg
-	call	_println_pascal_string
-	add		esp, 4
-	; Write empty line
-	call	_println
-	; Return
+_pWriteHelloWorld:
+	push    helloWorldMsg
+	call    _println_pascal_string
+	add     esp, 4
 	ret
 
-_pShowBigBoyMessage:
-	push	bigBoyMsg
-	call	_print_pascal_string
-	add		esp, 4
-	push	user_name
-	call	_print_pascal_string
-	add		esp, 4
-	push	exclamationMsg
-	call	_println_pascal_string
-	add		esp, 4
-	ret
-
-_pCountALittle:
-	; Say that it is time to count a little
-	push	letCountMsg
-	call	_println_pascal_string
-	add		esp, 4
-	; Ask about born year
-	push	whatYearMsg
-	call	_println_pascal_string
-	add		esp, 4
-	; Get born year
-	call	_read_uint32
-	mov		[born_year], eax
-	; Count age
-	mov		eax, [currentYear]
-	sub		eax, [born_year]
-	mov		[age], eax
-	; Say age
-	push	wowMsg
-	call	_print_pascal_string
-	add		esp, 4
-	push	dword [age]
-	call	_print_uint32
-	add		esp, 4
-	push	yearsMsg
-	call	_println_pascal_string
-	add		esp, 4
-	; Say user is big boy
-	call	_pShowBigBoyMessage
-	; Write empty line
-	call	_println
-	; Return
-	ret
-
-_pCountALittleMore:
-	; Say that it is time to count a little more
-	push	letCountMoreMsg
-	call	_println_pascal_string
-	add		esp, 4
-	; Count from 1 to 10
+_pRunLoops:
+	;Write messages to screen
+	push    msgLoop1
+	call    _println_pascal_string
+	add     esp, 4
+	
+	; Do a loopty loop (x3)
 	mov		ecx, 1
 	.outerLoopBegin:
 	mov		[i], ecx
-	push    dword [i]
+	; Write second messsage to console
+	push    goodbyeWordlMsg
+	call    _println_pascal_string
+	add     esp, 4
+	
+	;Write messages to screen
+	push    msgLoop2
+	call    _println_pascal_string
+	add     esp, 4
+	; Do a backward loopty loop (x2)
+	mov		ecx, 2
+	.innerLoopBegin:
+	mov		[j], ecx
+	; Write loop counter to console
+	push    dword [j]
 	call    _println_uint32
 	add     esp, 4
+	; End of the inner loop
+	mov		ecx, [j]
+	dec		ecx
+	cmp		ecx, 1
+	jge		.innerLoopBegin
+	; End of the outer loop
 	mov		ecx, [i]
 	inc		ecx
-	cmp		ecx, 10
+	cmp		ecx, 3
 	jle		.outerLoopBegin
-	; Say about fingers
-	push	tenAndFingers
-	call	_println_pascal_string
+	
+	;Write messages to screen
+	push    msgLoop3
+	call    _println_pascal_string
+	add     esp, 4
+	; Return
+	ret
+
+_pReadUserVariables:
+	;Write messages to screen
+	push    msgReadString
+	call    _println_pascal_string
+	add     esp, 4
+	; Read user string
+	push	str_var
+	call	_read_pascal_string
+	add		esp, 4
+	
+	;Write messages to screen
+	push    msgReadByte
+	call    _println_pascal_string
+	add     esp, 4
+	; Read user byte
+	call	_read_uint8
+	mov		[byte_var], al
+	
+	;Write messages to screen
+	push    msgReadWord
+	call    _println_pascal_string
+	add     esp, 4
+	; Read user word
+	call	_read_uint16
+	mov		[word_var], ax
+	
+	;Write messages to screen
+	push    msgReadDouble
+	call    _println_pascal_string
+	add     esp, 4
+	; Read user double
+	call	_read_uint32
+	mov		[double_var], eax
+	; Return
+	ret
+
+_pWriteUserVariables:
+    ;Write messages to screen
+	push    msgWriteString
+	call    _println_pascal_string
+	add     esp, 4
+	; Write user string
+	push    str_var
+	call    _println_pascal_string
+	add     esp, 4
+	
+	;Write messages to screen
+	push    msgWriteByte
+	call    _println_pascal_string
+	add     esp, 4
+	; Write user byte
+	push	dword [byte_var]
+	call	_println_uint8
+	add		esp, 4
+	
+	;Write messages to screen
+	push    msgWriteWord
+	call    _println_pascal_string
+	add     esp, 4
+	; Write user double
+	push	dword [word_var]
+	call	_println_uint16
+	add		esp, 4
+	
+	;Write messages to screen
+	push    msgWriteDouble
+	call    _println_pascal_string
+	add     esp, 4
+	; Write user double
+	push	dword [double_var]
+	call	_println_uint32
 	add		esp, 4
 	; Return
 	ret
 
+_pDoMath:
+	;;;SUB
+	;Write messages to screen
+	push    msgWriteSub0
+	call    _println_pascal_string
+	add     esp, 4
+	push    msgWriteSub
+	call    _println_pascal_string
+	add     esp, 4
+	push    dword [word_var]
+	call    _println_uint16
+	add     esp, 4
+	
+	; word_var -= byte_var
+	mov		eax, [word_var]
+	sub		al, [byte_var]
+	mov		[word_var], eax
+	
+	;Write messages to screen
+	push    msgWriteSub
+	call    _println_pascal_string
+	add     esp, 4
+	push    dword [word_var]
+	call    _println_uint16
+	add     esp, 4
+	
+	;;;DEC
+	;Write messages to screen
+	push    msgWriteDec
+	call    _println_pascal_string
+	add     esp, 4
+	push    dword [byte_var]
+	call    _println_uint8
+	add     esp, 4
+	
+	; --byte_var
+	mov		eax, [byte_var]
+	dec		eax
+	mov		[byte_var], eax
+	
+	;Write messages to screen
+	push    msgWriteDec
+	call    _println_pascal_string
+	add     esp, 4
+	push    dword [byte_var]
+	call    _println_uint8
+	add     esp, 4
+	; Return
+	ret
+
+_pWriteConstByte:
+	;Write messages to screen
+	push    msgWriteConstByte
+	call    _print_pascal_string
+	add     esp, 4
+	
+	; Write const byte
+	push	dword [constByte]
+	call	_println_uint8
+	add		esp, 4	
+	; Return
+	ret
+
+_pDoConditions:
+	; Check if second user value is less than 32
+	mov		al, [byte_var]
+	cmp		al, 32
+	jge		.endFirstIf
+	push    secondValLessMsg
+	call    _println_pascal_string
+	add     esp, 4
+	.endFirstIf:
+	; Check if third user value is less than 32
+	mov		ax, [word_var]
+	cmp		ax, 32
+	jge		.elseSecondIf
+	push    thirdValLessMsg
+	call    _println_pascal_string
+	add     esp, 4
+	jmp		.endSecondIf
+	.elseSecondIf:
+	push    thirdValNotLessMsg
+	call    _println_pascal_string
+	add     esp, 4
+	.endSecondIf:
+	; Return
+	ret
+	
+_pDoFor:
+	mov		ecx, [double_var]
+	.outerLoopBegin:
+	mov		[i], ecx
+	mov		ecx, [i]
+	inc		ecx
+	cmp		ecx, [double_var]
+	jle		.outerLoopBegin
+	; Return
+	ret
+	
 ; Main function
 _main:
-	call	_pGetUserName
-	call	_pCountALittle
-	call	_pCountALittleMore
+	call 	_pWriteConstByte
+	call	_pWriteHelloWorld
+	call	_pReadUserVariables
+	call	_pDoMath
+	call	_pRunLoops
+	call	_pWriteUserVariables
+	call	_pDoConditions
+	call	_pDoFor
+	
+	; Return
 	ret

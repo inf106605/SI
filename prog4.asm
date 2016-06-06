@@ -32,51 +32,57 @@
 ; Section with 0-initialized variables
 	section .bss
 	
-n:
-	resd	1
 x:
 	resd	1
 y:
 	resd	1
+z:
+	resd	1
 i:
+	resd	1
+maxI:
 	resd	1
 
 ; Section with constants and program instructions
 	section .text
 
+separator:
+	db		2, ')', 9
+
 ; Main function
 _main:
 	; Read max i
 	call	_read_uint32
-	mov		[n], eax
+	mov		[maxI], eax
 	; Initialization
-	mov		dword [x], 1
+	mov		dword [x], 0
+	mov		dword [y], 1
 	; For begin
 	mov		ecx, 0
 	.loopBegin:
 	mov		[i], ecx
-	; Step
-	xor		edx, edx
-	mov		eax, [n]
-	mov		ebx, [x]
-	div		ebx
-	mov		[y], eax
-	mov		eax, [x]
-	add		eax, [y]
-	mov		[x], eax
-	xor		edx, edx
-	mov		eax, [x]
-	mov		ebx, 2
-	div		ebx
-	mov		[x], eax
-	; For end
-	mov		ecx, [i]
-	inc		ecx
-	cmp		ecx, 10
-	jle		.loopBegin
 	; Write result
+	push	dword [i]
+	call	_print_uint32
+	add		esp, 4
+	push	separator
+	call	_print_pascal_string
+	add		esp, 4
 	push	dword [x]
 	call	_println_uint32
 	add		esp, 4
+	; Fibonnaci step
+	mov		eax, [x]
+	add		eax, [y]
+	mov		[z], eax
+	mov		eax, [y]
+	mov		[x], eax
+	mov		eax, [z]
+	mov		[y], eax
+	; For end
+	mov		ecx, [i]
+	inc		ecx
+	cmp		ecx, [maxI]
+	jle		.loopBegin
 	; Return
 	ret
