@@ -1,18 +1,19 @@
 #!/bin/sh
 
-if [ \( -e ./prog3.asm \) -o \( -e ./input3.txt \) ] ; then
+max_val=3
+
+if [ \( -e ./prog$(expr $max_val + 1).asm \) -o \( -e ./input$(expr $max_val + 1).txt \) ] ; then
 	echo ERROR!
 	exit 1
 fi
 
 make clean
 
-mv ./prog.asm ./prog3.asm
-mv ./prog2.asm ./prog.asm
-mv ./prog3.asm ./prog2.asm
-
-mv ./input.txt ./input3.txt
-mv ./input2.txt ./input.txt
-mv ./input3.txt ./input2.txt
+mv ./prog1.asm ./prog$(expr $max_val + 1).asm
+mv ./input1.txt ./input$(expr $max_val + 1).txt
+for i in $(seq 1 $max_val) ; do
+	mv ./prog$(expr $i + 1).asm ./prog${i}.asm
+	mv ./input$(expr $i + 1).txt ./input${i}.txt
+done
 
 exit 0

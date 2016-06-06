@@ -8,14 +8,14 @@ fi
 echo
 
 echo '----- ASM -----'
-./prog_asm.exe <./input.txt | tee ./output_asm.txt
+./prog_asm.exe <./input1.txt | tee ./output_asm.txt
 result=$?
 if [ $result -ne 0 ] ; then
 	exit $result
 fi
 echo
 echo '----- PAS -----'
-./prog_pas.exe <./input.txt | tee ./output_pas.txt
+./prog_pas.exe <./input1.txt | tee ./output_pas.txt
 result=$?
 if [ $result -ne 0 ] ; then
 	exit $result
